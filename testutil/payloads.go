@@ -546,11 +546,21 @@ const BadAttachVolumeYaml = `attach_volume:
   volume_uuid: ` + VolumeUUID + `
 `
 
+// BadAttachVolumeYaml is a corrupt yaml payload for the ssntp Attach Volume command.
+const BadAttachVolumeYaml = `attach_volume:
+  volume_uuid: ` + VolumeUUID + `
+`
+
 // DetachVolumeYaml is a sample yaml payload for the ssntp Detach Volume command.
 const DetachVolumeYaml = `detach_volume:
   instance_uuid: ` + InstanceUUID + `
   volume_uuid: ` + VolumeUUID + `
   workload_agent_uuid: ` + AgentUUID + `
+`
+
+// BadDetachVolumeYaml is a corrupt yaml payload for the ssntp Detach Volume command.
+const BadDetachVolumeYaml = `detach_volume:
+  instance_uuid: ` + InstanceUUID + `
 `
 
 // BadDetachVolumeYaml is a corrupt yaml payload for the ssntp Detach Volume command.
