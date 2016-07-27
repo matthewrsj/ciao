@@ -574,6 +574,27 @@ func (server *SsntpTestServer) handleStart(payload []byte) (dest ssntp.ForwardDe
 	return dest
 }
 
+func (server *SsntpTestServer) handleAttachVolume(payload []byte) ssntp.ForwardDestination {
+	var cmd payloads.AttachVolume
+	var dest ssntp.ForwardDestination
+
+	err := yaml.Unmarshal(payload, &cmd)
+	if err != nil {
+		return dest
+	}
+
+	server.clientsLock.Lock()
+	defer server.clientsLock.Unlock()
+
+	for _, c := range server.clients {
+		if c == cmd.Attach.WorkloadAgentUUID {
+			dest.AddRecipient(c)
+		}
+	}
+
+	return dest
+}
+
 // CommandForward implements an SSNTP CommandForward callback for SsntpTestServer
 func (server *SsntpTestServer) CommandForward(uuid string, command ssntp.Command, frame *ssntp.Frame) (dest ssntp.ForwardDestination) {
 	payload := frame.Payload
@@ -581,13 +602,13 @@ func (server *SsntpTestServer) CommandForward(uuid string, command ssntp.Command
 	switch command {
 	case ssntp.START:
 		dest = server.handleStart(payload)
+	case ssntp.AttachVolume:
+		dest = server.handleAttachVolume(payload)
 	case ssntp.EVACUATE:
 		fallthrough
 	case ssntp.STOP:
 		fallthrough
 	case ssntp.DELETE:
-		fallthrough
-	case ssntp.AttachVolume:
 		fallthrough
 	case ssntp.RESTART:
 		//TODO: dest, instanceUUID = sched.fwdCmdToComputeNode(command, payload)
@@ -652,6 +673,10 @@ func StartTestServer() *SsntpTestServer {
 			},
 			{ // all DeleteFailure events go to all Controllers
 				Operand: ssntp.DeleteFailure,
+				Dest:    ssntp.Controller,
+			},
+			{ // all VolumeAttachFailure events go to all Controllers
+				Operand: ssntp.AttachVolumeFailure,
 				Dest:    ssntp.Controller,
 			},
 			{ // all PublicIPAssigned events go to all Controllers
