@@ -610,8 +610,6 @@ func (server *SsntpTestServer) CommandForward(uuid string, command ssntp.Command
 		fallthrough
 	case ssntp.DELETE:
 		fallthrough
-	case ssntp.AttachVolume:
-		fallthrough
 	case ssntp.RESTART:
 		//TODO: dest, instanceUUID = sched.fwdCmdToComputeNode(command, payload)
 	default:
