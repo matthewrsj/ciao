@@ -45,7 +45,7 @@ func (d CephDriver) CreateBlockDevice(imagePath *string, size int) (BlockDevice,
 		cmd = exec.Command("rbd", "--keyring", d.SecretPath, "--id", d.ID, "--image-format", "1", "import", *imagePath, ID)
 	} else {
 		// create an empty volume
-		cmd = exec.Command("rbd", "--keyring", d.SecretPath, "--id", d.ID, "--image-format", "1", "create", "--size", strconv.Itoa(size), ID)
+		cmd = exec.Command("rbd", "--keyring", d.SecretPath, "--id", d.ID, "--image-format", "1", "create", "--size", strconv.Itoa(size)+"G", ID)
 	}
 
 	_, err := cmd.CombinedOutput()
