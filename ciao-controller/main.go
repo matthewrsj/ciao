@@ -68,6 +68,7 @@ var imagesPath = flag.String("images_path", "/var/lib/ciao/images", "path to cia
 
 var keyringPath = flag.String("ceph_keyring", "", "path to ceph client keyring")
 var cephID = flag.String("ceph_id", "", "ceph client id")
+var cephConfigPath = flag.String("ceph_config", "", "path to ceph config file")
 
 func init() {
 	flag.Parse()
@@ -142,6 +143,9 @@ func main() {
 	if *cephID == "" {
 		*cephID = clusterConfig.Configure.Storage.CephID
 	}
+	if *cephConfigPath == "" {
+		*cephConfigPath = clusterConfig.Configure.Storage.ConfigPath
+	}
 
 	osprepare.InstallDeps(controllerDeps)
 
@@ -174,6 +178,7 @@ func main() {
 		driver := storage.CephDriver{
 			SecretPath: *keyringPath,
 			ID:         *cephID,
+			ConfigPath: *cephConfigPath,
 		}
 		return driver
 	}()

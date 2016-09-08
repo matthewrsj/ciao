@@ -58,6 +58,10 @@ func TestConfigureUnmarshal(t *testing.T) {
 		t.Errorf("Wrong launcher ceph id %v", cfg.Configure.Storage.CephID)
 	}
 
+	if cfg.Configure.Storage.ConfigPath != testutil.CephConfigPath {
+		t.Errorf("Wrong launcher ceph config path %v", cfg.Configure.Storage.ConfigPath)
+	}
+
 	if cfg.Configure.Scheduler.ConfigStorageType != Filesystem {
 		t.Errorf("Wrong scheduler storage type [%s]", cfg.Configure.Scheduler.ConfigStorageType)
 	}
@@ -91,6 +95,7 @@ func TestConfigureMarshal(t *testing.T) {
 
 	cfg.Configure.Storage.SecretPath = testutil.KeyPath
 	cfg.Configure.Storage.CephID = testutil.ManagementID
+	cfg.Configure.Storage.ConfigPath = testutil.CephConfigPath
 
 	cfg.Configure.Scheduler.ConfigStorageType = Filesystem
 	cfg.Configure.Scheduler.ConfigStorageURI = testutil.StorageURI

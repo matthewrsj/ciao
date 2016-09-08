@@ -23,6 +23,7 @@ func TestCreateBlockDevice(t *testing.T) {
 	driver := cephDriver{
 		SecretPath: "/etc/ceph/ceph.client.kristen.keyring",
 		ID:         "kristen",
+		ConfigPath: "/etc/ceph/ceph.conf",
 	}
 
 	imagePath := "/var/lib/ciao/images/73a86d7e-93c0-480e-9c41-ab42f69b7799"

@@ -402,5 +402,6 @@ func startInstance(instance string, cfg *vmConfig, wg *sync.WaitGroup, doneCh ch
 		storage.CephDriver{
 			SecretPath: secretPath,
 			ID:         cephID,
+			ConfigPath: cephConfigPath,
 		})
 }

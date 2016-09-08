@@ -72,6 +72,9 @@ const KeyPath = "/etc/ceph/ceph.client.ciao.keyring"
 // ManagementID is a test identifier for a Ceph ID
 const ManagementID = "ciao"
 
+// CephConfigPath is a test path to a ceph configuration file
+const CephConfigPath = "/etc/ceph/ceph.conf"
+
 // StorageURI is a test storage URI
 const StorageURI = "/etc/ciao/ciao.json"
 
@@ -345,6 +348,7 @@ const ConfigureYaml = `configure:
   storage:
     secret_path: ` + KeyPath + `
     ceph_id: ` + ManagementID + `
+    config_path: ` + CephConfigPath + `
   controller:
     compute_port: ` + ComputePort + `
     compute_ca: ` + HTTPSCACert + `

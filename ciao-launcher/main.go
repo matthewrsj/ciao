@@ -67,6 +67,7 @@ var diskLimit bool
 var memLimit bool
 var secretPath string
 var cephID string
+var cephConfigPath string
 var simulate bool
 var maxInstances = int(math.MaxInt32)
 
@@ -78,6 +79,7 @@ func init() {
 	flag.BoolVar(&simulate, "simulation", false, "Launcher simulation")
 	flag.StringVar(&secretPath, "ceph_keyring", "", "path to ceph client keyring")
 	flag.StringVar(&cephID, "ceph_id", "", "ceph client id")
+	flag.StringVar(&cephConfigPath, "ceph_config", "", "path to ceph config file")
 }
 
 const (
@@ -355,6 +357,7 @@ func printClusterConfig() {
 	glog.Infof("Memory Limit:         %v", memLimit)
 	glog.Infof("Secret Path:          %v", secretPath)
 	glog.Infof("Ceph ID:              %v", cephID)
+	glog.Infof("Ceph Config Path:     %v", cephConfigPath)
 }
 
 func connectToServer(doneCh chan struct{}, statusCh chan struct{}) {
@@ -410,6 +413,9 @@ DONE:
 			}
 			if cephID == "" {
 				cephID = clusterConfig.Configure.Storage.CephID
+			}
+			if cephConfigPath == "" {
+				cephConfigPath = clusterConfig.Configure.Storage.ConfigPath
 			}
 			printClusterConfig()
 

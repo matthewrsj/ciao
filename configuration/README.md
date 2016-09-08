@@ -52,6 +52,7 @@ configure:
   storage:
     secret_path: string [Path to the keyring file]
     ceph_id: string [Name used for the Ceph identifier]
+    config_path: string [Path to the ceph config file]
   controller:
     compute_port: int
     compute_ca: string [The HTTPS compute endpoint CA]
@@ -105,6 +106,7 @@ configure:
   storage:
     secret_path: /etc/ceph/ceph.client.ciao.keyring
     ceph_id: ciao
+    config_path: /etc/ceph/ceph.conf
   controller:
     compute_port: 8774
     compute_ca: /etc/pki/ciao/compute_ca.pem

@@ -32,6 +32,9 @@ type CephDriver struct {
 
 	// ID is the cephx user ID to use
 	ID string
+
+	// ConfigPath is the full path to the ceph config file.
+	ConfigPath string
 }
 
 // CreateBlockDevice will create a rbd image in the ceph cluster.
@@ -42,10 +45,14 @@ func (d CephDriver) CreateBlockDevice(imagePath *string, size int) (BlockDevice,
 	var cmd *exec.Cmd
 
 	if imagePath != nil {
-		cmd = exec.Command("rbd", "--keyring", d.SecretPath, "--id", d.ID, "--image-format", "1", "import", *imagePath, ID)
+		cmd = exec.Command(
+			"rbd", "--keyring", d.SecretPath, "--id", d.ID, "--conf", d.ConfigPath,
+			"--image-format", "1", "import", *imagePath, ID)
 	} else {
 		// create an empty volume
-		cmd = exec.Command("rbd", "--keyring", d.SecretPath, "--id", d.ID, "--image-format", "1", "create", "--size", strconv.Itoa(size)+"G", ID)
+		cmd = exec.Command(
+			"rbd", "--keyring", d.SecretPath, "--id", d.ID, "--conf", d.ConfigPath,
+			"--image-format", "1", "create", "--size", strconv.Itoa(size)+"G", ID)
 	}
 
 	_, err := cmd.CombinedOutput()
@@ -71,6 +78,10 @@ func (d CephDriver) getCredentials() []string {
 
 	if d.ID != "" {
 		args = append(args, "--id", d.ID)
+	}
+
+	if d.ConfigPath != "" {
+		args = append(args, "--conf", d.ConfigPath)
 	}
 	return args
 }

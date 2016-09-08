@@ -42,6 +42,7 @@ const httpsKey = "/etc/pki/ciao/compute_key.pem"
 const httpsCACert = "/etc/pki/ciao/compute_ca.pem"
 const secretPath = "/etc/ceph/ceph.client.ciao.keyring"
 const cephID = "ciao"
+const cephConfigPath = "/etc/ceph/ceph.conf"
 
 const minValidConf = `configure:
   scheduler:
@@ -66,6 +67,7 @@ const fullValidConf = `configure:
   storage:
     secret_path: /etc/ceph/ceph.client.ciao.keyring
     ceph_id: ciao
+    config_path: /etc/ceph/ceph.conf
   controller:
     compute_port: 8774
     compute_ca: /etc/pki/ciao/compute_ca.pem
@@ -169,6 +171,7 @@ func fillPayload(conf *payloads.Configure) {
 	conf.Configure.IdentityService.URL = keystoneURL
 	conf.Configure.Storage.SecretPath = secretPath
 	conf.Configure.Storage.CephID = cephID
+	conf.Configure.Storage.ConfigPath = cephConfigPath
 }
 
 func testPayload(t *testing.T, blob []byte, expectedConf payloads.Configure, positive bool) {

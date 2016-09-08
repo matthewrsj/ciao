@@ -93,6 +93,7 @@ type ConfigureLauncher struct {
 type ConfigureStorage struct {
 	SecretPath string `yaml:"secret_path"`
 	CephID     string `yaml:"ceph_id"`
+	ConfigPath string `yaml:"config_path"`
 }
 
 // ConfigureService contains the unmarshalled configurations for the resources

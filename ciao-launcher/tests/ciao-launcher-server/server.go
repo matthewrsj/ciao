@@ -45,6 +45,7 @@ var diskLimit bool
 var memLimit bool
 var secretPath string
 var cephID string
+var cephConfigPath string
 
 var ssntpServer = &ssntp.Server{}
 
@@ -59,6 +60,7 @@ func init() {
 	flag.BoolVar(&memLimit, "mem-limit", true, "Use memory usage limits")
 	flag.StringVar(&secretPath, "secret-path", "/etc/ceph/ceph.client.ciao.keyring", "path to ceph client keyring")
 	flag.StringVar(&cephID, "ceph-id", "ciao", "ceph client id")
+	flag.StringVar(&cephConfigPath, "ceph-config", "/etc/ceph/ceph.conf", "path to ceph config file")
 }
 
 type client struct {
@@ -501,6 +503,7 @@ func createConfigFile(confPath string) error {
 	}
 	conf.Configure.Storage.SecretPath = secretPath
 	conf.Configure.Storage.CephID = cephID
+	conf.Configure.Storage.ConfigPath = cephConfigPath
 
 	d, err := yaml.Marshal(&conf)
 	if err != nil {
