@@ -289,7 +289,7 @@ func (cn *ComputeNode) Init() error {
 	}
 
 	//TODO: Support all modes
-	if cn.Mode != GreTunnel {
+	if cn.Mode != GreTunnel && cn.Mode != OvsGre {
 		return NewAPIError(fmt.Sprintf("Unsupported network mode %v", cn.Mode))
 	}
 
@@ -865,7 +865,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 		CnID:      cn.ID,
 	}
 
-	if err := createAndEnableBridge(bridge, gre); err != nil {
+	if err := createAndEnableBridge(bridge, gre, cn.Mode); err != nil {
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 	bLink.index = bridge.Link.Index
@@ -966,19 +966,28 @@ func (cn *ComputeNode) logicallyCreateBridge(bridge *Bridge, gre *GreTunEP, vnic
 //Physically create the devices by calling into the kernel
 //TODO: Try to be more fault tolerant here. We may miss errors but try to
 // honor the request  e.g. If bridge exists use it and try and create tunnel
-func createAndEnableBridge(bridge *Bridge, gre *GreTunEP) error {
+func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) error {
 	if err := bridge.Create(); err != nil {
 		return fmt.Errorf("Bridge creation failed %s %s", bridge.GlobalID, err.Error())
 	}
-	if err := gre.create(); err != nil {
-		return fmt.Errorf("GRE creation failed %s %s", gre.GlobalID, err.Error())
-	}
-	if err := gre.attach(bridge); err != nil {
-		return fmt.Errorf("GRE attach failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
-	}
 
-	if err := gre.enable(); err != nil {
-		return fmt.Errorf("GRE enable failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
+	switch mode {
+	case GreTunnel:
+		if err := gre.create(); err != nil {
+			return fmt.Errorf("GRE creation failed %s %s", gre.GlobalID, err.Error())
+		}
+		if err := gre.attach(bridge); err != nil {
+			return fmt.Errorf("GRE attach failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
+		}
+
+		if err := gre.enable(); err != nil {
+			return fmt.Errorf("GRE enable failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
+		}
+	case OvsGre:
+		if ovs, err := gre.connect(); err != nil {
+			return fmt.Errorf("OVS GRE connect failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
+		}
+		gre.createBridge(ovs)
 	}
 	if err := bridge.Enable(); err != nil {
 		return fmt.Errorf("Bridge enable failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())

@@ -60,6 +60,7 @@ func initNetworkPhase1() error {
 	cn.NetworkConfig = &libsnnet.NetworkConfig{
 		ManagementNet: mnetList,
 		ComputeNet:    cnetList,
+		//Mode:          libsnnet.OvsGre,
 		Mode:          libsnnet.GreTunnel,
 	}
 

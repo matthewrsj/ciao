@@ -97,6 +97,7 @@ const (
 	Routed NetworkMode = iota
 	// GreTunnel means tenant instances interlinked using GRE tunnels. Full tenant isolation
 	GreTunnel
+	OvsGre
 )
 
 // VnicRole specifies the role of the VNIC

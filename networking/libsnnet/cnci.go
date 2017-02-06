@@ -505,10 +505,18 @@ func (cnci *Cnci) AddRemoteSubnet(subnet net.IPNet, subnetKey int, cnIP net.IP) 
 		}
 	}
 
+	var i NetworkMode
+	i = GreTunnel
 	if !greExists {
-		err = createCnciTunnel(gre)
-		gLink.index = gre.Link.Index
-		close(gLink.ready)
+		switch i {
+		case GreTunnel:
+			err = createCnciTunnel(gre)
+			gLink.index = gre.Link.Index
+			close(gLink.ready)
+		case OvsGre:
+			ovs, err := gre.connect()
+			createBridge(ovs)
+		}
 		if err != nil {
 			return "", err
 		}
