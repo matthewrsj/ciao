@@ -35,52 +35,51 @@ func (g *GreTunEP) connect() (*libovsdb.OvsdbClient, error) {
 	return ovs, nil
 }
 
-func (g *GreTunEP) createBridge(ovs *libovsdb.OvsdbClient) {
-	namedUUID := "ciaoee-wowee"
-	// bridge row to insert
-	bridge := make(map[string]interface{})
-	bridge["name"] = g.GlobalId
+func (g *GreTunEP) addGrePort(bridgeName string) error {
+	ovs = libovsdb.OvsdbClient()
+	PortNamedUUID = "ciao-port"
+	IntfNamedUUID = "ciao-intf"
 
-	// simple insert operation
-	insertOp := libovsdb.Operation{
-		Op:       "insert",
-		Table:    "Bridge",
-		Row:      bridge,
-		UUIDName: namedUUID,
+	options := make(map[string]interface{})
+	options["remote_ip"] = g.RemoteIP
+	//options["ip"] = g.LocalIP // is this necessary?
+	intf["name"] = g.GlobalID
+	intf["type"] = `gre`
+	intf["options"], _ = libovsdb.NewOvsMap(options)
+
+	insertIntfOp := libovsdb.Operation{
+		Op:        "insert",
+		Table:     "Interface",
+		Row:       intf,
+		UUIDName:  IntfNamedUUID,
 	}
 
-	// Inserting a Bridge row in Bridge table requires mutating the open_vswitch table.
-	uuidParameter := libovsdb.UUID{GoUUID: getRootUUID()}
-	mutateUUID := []libovsdb.UUID{{namedUUID}}
-	mutateSet, _ := libovsdb.NewOvsSet(mutateUUID)
-	mutation := libovsdb.NewMutation("bridges", "insert", mutateSet)
-	condition := libovsdb.NewCondition("_uuid", "==", uuidParameter)
+	port := make(map[string]interface{})
+	port["name"] = g.GlobalID
+	port["interfaces"] = libovsdb.UUID{IntfNamedUUID}
 
-	// simple mutate operation
-	mutateOp := libovsdb.Operation{
-		Op:        "mutate",
-		Table:     "Open_vSwitch",
-		Mutations: []interface{}{mutation},
-		Where:     []interface{}{condition},
+	insertPortOp := libovsdb.Operation{
+		Op:        "insert",
+		Table:     "Port",
+		Row:       port,
+		UUIDName:  PortNamedUUID,
 	}
 
-	operations := []libovsdb.Operation{insertOp, mutateOp}
-	reply, _ := ovs.Transact("Open_vSwitch", operations...)
-
+	operations := []libovsdb.Operation{insertIntfOp, insertPortOp}
+	reply, _ := ovs.ovsdb.Transact("Open_vSwitch", operations...)
 	if len(reply) < len(operations) {
-		fmt.Println("Number of Replies should be atleast equal to number of Operations")
+		return netError("Number of replies should at least equal number of operations")
 	}
-	ok := true
+
 	for i, o := range reply {
 		if o.Error != "" && i < len(operations) {
-			fmt.Println("Transaction Failed due to an error :", o.Error, " details:", o.Details, " in ", operations[i])
-			ok = false
+			msg := fmt.Sprintf("Transaction failed due to an error : %v details: %v in %v", o.Error, o.Details, operations[i])
+			return netError(g, msg)
 		} else if o.Error != "" {
-			fmt.Println("Transaction Failed due to an error :", o.Error)
-			ok = false
+			msg := fmt.Sprintf("Transaction failed due to an error : %v", o.Error)
+			return netError(g, msg)
 		}
 	}
-	if ok {
-		fmt.Println("Bridge Addition Successful : ", reply[0].UUID.GoUUID)
-	}
+
+	return nil
 }
