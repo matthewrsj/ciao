@@ -35,15 +35,14 @@ func (g *GreTunEP) connect() (*libovsdb.OvsdbClient, error) {
 	return ovs, nil
 }
 
-func (g *GreTunEP) addGrePort(bridgeName string) error {
-	ovs = libovsdb.OvsdbClient()
+func (ovs *ovsdber) addGrePort(bridgeName string, gre *GreTunEP) error {
 	PortNamedUUID = "ciao-port"
 	IntfNamedUUID = "ciao-intf"
 
 	options := make(map[string]interface{})
-	options["remote_ip"] = g.RemoteIP
-	//options["ip"] = g.LocalIP // is this necessary?
-	intf["name"] = g.GlobalID
+	options["remote_ip"] = gre.RemoteIP
+	//options["ip"] = gre.LocalIP // is this necessary?
+	intf["name"] = gre.GlobalID
 	intf["type"] = `gre`
 	intf["options"], _ = libovsdb.NewOvsMap(options)
 
@@ -55,7 +54,7 @@ func (g *GreTunEP) addGrePort(bridgeName string) error {
 	}
 
 	port := make(map[string]interface{})
-	port["name"] = g.GlobalID
+	port["name"] = gre.GlobalID
 	port["interfaces"] = libovsdb.UUID{IntfNamedUUID}
 
 	insertPortOp := libovsdb.Operation{
@@ -65,7 +64,21 @@ func (g *GreTunEP) addGrePort(bridgeName string) error {
 		UUIDName:  PortNamedUUID,
 	}
 
-	operations := []libovsdb.Operation{insertIntfOp, insertPortOp}
+	// Inserting a row in Port table requires mutating the bridge table.
+	mutateUUID := []libovsdb.UUID{libovsdb.UUID{PortNamedUUID}}
+	mutateSet, _ := libovsdb.NewOvsSet(mutateUUID)
+	mutation := libovsdb.NewMutation("ports", "insert", mutateSet)
+	condition := libovsdb.NewCondition("name", "==", bridgeName)
+
+	// simple mutate operation
+	mutateOp := libovsdb.Operation{
+		Op:        "mutate",
+		Table:     "Bridge",
+		Mutations: []interface{}{mutation},
+		Where:     []interface{}{condition},
+	}
+
+	operations := []libovsdb.Operation{insertIntfOp, insertPortOp, mutateOp}
 	reply, _ := ovs.ovsdb.Transact("Open_vSwitch", operations...)
 	if len(reply) < len(operations) {
 		return netError("Number of replies should at least equal number of operations")
@@ -81,5 +94,52 @@ func (g *GreTunEP) addGrePort(bridgeName string) error {
 		}
 	}
 
+	return nil
+}
+
+func (ovsdber *ovsdber) deletePort(bridgeName string, portName string) error {
+	condition := libovsdb.NewCondition("name", "==", portName)
+	deleteOp := libovsdb.Operation{
+		Op:    "delete",
+		Table: "Port",
+		Where: []interface{}{condition},
+	}
+
+	portUUID := portUUIDForName(portName)
+	if portUUID == "" {
+		log.Error("Unable to find a matching Port : ", portName)
+		return fmt.Errorf("Unable to find a matching Port : [ %s ]", portName)
+	}
+
+	// Deleting a Bridge row in Bridge table requires mutating the open_vswitch table.
+	mutateUUID := []libovsdb.UUID{libovsdb.UUID{portUUID}}
+	mutateSet, _ := libovsdb.NewOvsSet(mutateUUID)
+	mutation := libovsdb.NewMutation("ports", "delete", mutateSet)
+	condition = libovsdb.NewCondition("name", "==", bridgeName)
+
+	// simple mutate operation
+	mutateOp := libovsdb.Operation{
+		Op:        "mutate",
+		Table:     "Bridge",
+		Mutations: []interface{}{mutation},
+		Where:     []interface{}{condition},
+	}
+
+	operations := []libovsdb.Operation{deleteOp, mutateOp}
+	reply, _ := ovsdber.ovsdb.Transact("Open_vSwitch", operations...)
+
+	if len(reply) < len(operations) {
+		log.Error("Number of Replies should be atleast equal to number of Operations")
+		return fmt.Errorf("Number of Replies should be atleast equal to number of Operations")
+	}
+	for i, o := range reply {
+		if o.Error != "" && i < len(operations) {
+			log.Error("Transaction Failed due to an error :", o.Error, " in ", operations[i])
+			return fmt.Errorf("Transaction Failed due to an error: %s in %v", o.Error, operations[i])
+		} else if o.Error != "" {
+			log.Error("Transaction Failed due to an error :", o.Error)
+			return fmt.Errorf("Transaction Failed due to an error %s", o.Error)
+		}
+	}
 	return nil
 }
