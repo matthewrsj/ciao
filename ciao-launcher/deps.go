@@ -28,18 +28,22 @@ var launcherClearLinuxCommonDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/qemu-system-x86_64", PackageName: "cloud-control"},
 	{BinaryName: "/usr/bin/xorriso", PackageName: "cloud-control"},
 	{BinaryName: "/usr/sbin/fuser", PackageName: "cloud-control"},
+	{Binaryname: "/usr/bin/openvswitch", PackageName: "cloud-control"},
+
 }
 
 var launcherFedoraCommonDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/qemu-system-x86_64", PackageName: "qemu-system-x86"},
 	{BinaryName: "/usr/bin/xorriso", PackageName: "xorriso"},
 	{BinaryName: "/usr/sbin/fuser", PackageName: "psmisc"},
+	{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch"},
 }
 
 var launcherUbuntuCommonDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/qemu-system-x86_64", PackageName: "qemu-system-x86"},
 	{BinaryName: "/usr/bin/xorriso", PackageName: "xorriso"},
 	{BinaryName: "/bin/fuser", PackageName: "psmisc"},
+	{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch-switch"},
 }
 
 var launcherNetNodeDeps = map[string][]osprepare.PackageRequirement{
