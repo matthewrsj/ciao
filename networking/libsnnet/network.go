@@ -97,6 +97,7 @@ const (
 	Routed NetworkMode = iota
 	// GreTunnel means tenant instances interlinked using GRE tunnels. Full tenant isolation
 	GreTunnel
+	OvsGreTunnel
 )
 
 // VnicRole specifies the role of the VNIC
@@ -141,6 +142,11 @@ type Attrs struct {
 type Bridge struct {
 	Attrs
 	Link *netlink.Bridge
+}
+
+// OvsBridge represents a ciao bridge created via ovs-vsctl
+type OvsBridge struct {
+	Attrs
 }
 
 // DhcpEntry is the fully qualified MAC address to IP mapping
