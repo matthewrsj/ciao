@@ -144,7 +144,7 @@ runcmd:
  - {{template "CHECK" .}}
 
  - curl -X PUT -d "Installing openvswitch-switch" 10.0.2.2:{{.HTTPServerPort}}
- - {{template "PROXIES" .}}apt-get install openvswitch-switch -y
+ - {{template "ENV" .}}apt-get install openvswitch-switch -y
  - {{template "CHECK" .}}
 
  - curl -X PUT -d "Updating NodeJS sources" 10.0.2.2:{{.HTTPServerPort}}
