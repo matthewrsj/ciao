@@ -23,6 +23,7 @@ var ciaoDevClearDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/xorriso", PackageName: "cloud-control"},
 	{BinaryName: "/usr/bin/ssh", PackageName: "openssh-server"},
 	{BinaryName: "/usr/bin/ssh-keygen", PackageName: "openssh-server"},
+	{BinaryName: "/usr/bin/openvswitch", PackageName: "cloud-control"},
 }
 
 var ciaoDevFedoraDeps = []osprepare.PackageRequirement{
@@ -30,6 +31,7 @@ var ciaoDevFedoraDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/xorriso", PackageName: "xorriso"},
 	{BinaryName: "/usr/bin/ssh", PackageName: "openssh-clients"},
 	{BinaryName: "/usr/bin/ssh-keygen", PackageName: "openssh-clients"},
+	{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch"},
 }
 
 var ciaoDevUbuntuDeps = []osprepare.PackageRequirement{
@@ -37,6 +39,7 @@ var ciaoDevUbuntuDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/xorriso", PackageName: "xorriso"},
 	{BinaryName: "/usr/bin/ssh", PackageName: "openssh-client"},
 	{BinaryName: "/usr/bin/ssh-keygen", PackageName: "openssh-client"},
+	{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch-switch"},
 }
 
 var ciaoDevDeps = map[string][]osprepare.PackageRequirement{
