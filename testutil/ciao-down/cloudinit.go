@@ -143,6 +143,10 @@ runcmd:
  - {{template "ENV" .}}apt-get install python-openstackclient -y
  - {{template "CHECK" .}}
 
+ - curl -X PUT -d "Installing openvswitch-switch" 10.0.2.2:{{.HTTPServerPort}}
+ - {{template "PROXIES" .}}apt-get install openvswitch-switch -y
+ - {{template "CHECK" .}}
+
  - curl -X PUT -d "Updating NodeJS sources" 10.0.2.2:{{.HTTPServerPort}}
  - {{template "ENV" .}}curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
  - {{template "CHECK" .}}
