@@ -97,6 +97,7 @@ const (
 	Routed NetworkMode = iota
 	// GreTunnel means tenant instances interlinked using GRE tunnels. Full tenant isolation
 	GreTunnel
+	// OvsGreTunnel creates tenant instances interlinked using OVS-created GRE tunnels.
 	OvsGreTunnel
 )
 

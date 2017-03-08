@@ -363,26 +363,43 @@ func startDnsmasq(bridge *Bridge, tenant string, subnet net.IPNet) (*Dnsmasq, er
 	return dns, nil
 }
 
-func createCnciBridge(bridge *Bridge, brInfo *bridgeInfo, tenant string, subnet net.IPNet) (err error) {
+func createCnciBridge(bridge *Bridge, brInfo *bridgeInfo, tenant string, subnet net.IPNet, mode NetworkMode) (err error) {
 	if bridge == nil || brInfo == nil {
 		return fmt.Errorf("nil pointer encountered bridge[%v] brInfo[%v]", bridge, brInfo)
 	}
-	if err = bridge.Create(); err != nil {
-		return err
-	}
-	if err = bridge.Enable(); err != nil {
-		return err
+	switch mode {
+	case GreTunnel:
+		if err = bridge.Create(); err != nil {
+			return err
+		}
+		if err = bridge.Enable(); err != nil {
+			return err
+		}
+	case OvsGreTunnel:
+		if err = createOvsBridge(bridge.GlobalID); err != nil {
+			return err
+		}
 	}
 	brInfo.Dnsmasq, err = startDnsmasq(bridge, tenant, subnet)
 	return err
 }
 
-func createCnciTunnel(gre *GreTunEP) (err error) {
-	if err = gre.create(); err != nil {
-		return err
-	}
-	if err = gre.enable(); err != nil {
-		return err
+func createCnciTunnel(bridge *Bridge, gre *GreTunEP, mode NetworkMode) (err error) {
+	switch mode {
+	case GreTunnel:
+		if err = gre.create(); err != nil {
+			return err
+		}
+		if err = gre.enable(); err != nil {
+			return err
+		}
+	case OvsGreTunnel:
+		if err = addPortInternal(bridge.GlobalID, gre.GlobalID); err != nil {
+			return err
+		}
+		if err = createGrePort(bridge.GlobalID, gre.GlobalID, gre.RemoteIP.String()); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -495,7 +512,7 @@ func (cnci *Cnci) AddRemoteSubnet(subnet net.IPNet, subnetKey int, cnIP net.IP) 
 
 	//Now create them. This is time consuming
 	if !brExists {
-		err = createCnciBridge(bridge, brInfo, cnci.Tenant, subnet)
+		err = createCnciBridge(bridge, brInfo, cnci.Tenant, subnet, cnci.NetworkConfig.Mode)
 		bLink.index = bridge.Link.Index
 		close(bLink.ready)
 		if err != nil {
@@ -506,7 +523,7 @@ func (cnci *Cnci) AddRemoteSubnet(subnet net.IPNet, subnetKey int, cnIP net.IP) 
 	}
 
 	if !greExists {
-		err = createCnciTunnel(gre)
+		err = createCnciTunnel(bridge, gre, cnci.NetworkConfig.Mode)
 		gLink.index = gre.Link.Index
 		close(gLink.ready)
 		if err != nil {

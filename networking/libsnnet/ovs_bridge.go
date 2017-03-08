@@ -4,8 +4,7 @@ import (
 	"os/exec"
 )
 
-
-func initBridgeCli(bridgeId string) error {
+func createOvsBridge(bridgeId string) error {
 	// Example: ovs-vsctl add-br ovs-br1
 	args := []string{"add-br", bridgeId}
 
