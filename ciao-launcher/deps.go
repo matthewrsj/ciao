@@ -28,7 +28,7 @@ var launcherClearLinuxCommonDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/qemu-system-x86_64", PackageName: "cloud-control"},
 	{BinaryName: "/usr/bin/xorriso", PackageName: "cloud-control"},
 	{BinaryName: "/usr/sbin/fuser", PackageName: "cloud-control"},
-	{Binaryname: "/usr/bin/openvswitch", PackageName: "cloud-control"},
+	{BinaryName: "/usr/bin/openvswitch", PackageName: "cloud-control"},
 
 }
 
