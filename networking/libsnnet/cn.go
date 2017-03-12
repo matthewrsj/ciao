@@ -289,7 +289,7 @@ func (cn *ComputeNode) Init() error {
 	}
 
 	//TODO: Support all modes
-	if cn.Mode != GreTunnel || cn.Mode != OvsGreTunnel {
+	if cn.Mode != GreTunnel && cn.Mode != OvsGreTunnel {
 		return NewAPIError(fmt.Sprintf("Unsupported network mode %v", cn.Mode))
 	}
 
