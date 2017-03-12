@@ -34,3 +34,10 @@ func vsctlCmd(args []string) error {
 
 	return nil
 }
+
+func ovsGetDevice(bridgeId string) error {
+	if err := createOvsBridge(bridgeId); err != nil {
+		return err
+	}
+	return nil
+}
