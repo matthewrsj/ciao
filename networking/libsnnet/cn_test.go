@@ -789,10 +789,10 @@ func TestCN_Whitebox(t *testing.T) {
 
 //Whitebox test the CN API
 //
-//This tests exercises tests the primitive operations
+//This tests exercises tests the primitive OVS operations
 //that the CN API rely on. This is used to check any
-//issues with the underlying netlink library or kernel
-//This tests fails typically if the kernel or netlink
+//issues with the underlying OVS implementation, netlink library,
+//or kernel. This tests fails typically if the OVS, kernel, or netlink
 //implementation changes
 //
 //Test is expected to pass
@@ -816,9 +816,8 @@ func TestCN_OVSWhitebox(t *testing.T) {
 
 	// Create the CN tenant bridge only if it does not exist
 	bridgeAlias := fmt.Sprintf("br_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
-	assert.Nil(createOvsBridge(bridgeAlias))
-	
-	if assert.NotNil(ovsGetDevice(bridgeAlias)) {
+
+	if assert.NotNil(createOvsBridge(bridgeAlias)) {
 		defer func() { _ = destroyBridgeCli(bridgeAlias) }()
 
 		// Create the tunnel to connect to the CNCI
