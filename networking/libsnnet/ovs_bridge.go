@@ -2,6 +2,7 @@ package libsnnet
 
 import (
 	"os/exec"
+	"errors"
 )
 
 func createOvsBridge(bridgeId string) error {
@@ -34,3 +35,17 @@ func vsctlCmd(args []string) error {
 
 	return nil
 }
+/*
+func getOvsDevice(bridgeId string) error {
+	args := []string{"br-exists", bridgeId}
+	if err := vsctlCmd(args); err != nil {
+		return err
+	}
+
+	if out,_ := exec.Command("echo", "$?").Output(); string(out) == "0" {
+		return errors.New("bridge already exists")
+	}
+
+	return nil
+}
+*/

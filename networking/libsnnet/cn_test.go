@@ -95,6 +95,44 @@ func cnTestInit() (*ComputeNode, error) {
 
 }
 
+func cnTestOVSInit() (*ComputeNode, error) {
+	snTestInit()
+
+	_, testNet, err := net.ParseCIDR(snTestNet)
+	if err != nil {
+		return nil, err
+	}
+
+	netConfig := &NetworkConfig{
+		ManagementNet: []net.IPNet{*testNet},
+		ComputeNet:    []net.IPNet{*testNet},
+		Mode:          OvsGreTunnel,
+	}
+
+	cn := &ComputeNode{
+		ID:            "TestCNUUID",
+		NetworkConfig: netConfig,
+	}
+
+	err = cn.Init()
+	if err != nil {
+		return nil, err
+	}
+	err = cn.ResetNetwork()
+	if err != nil {
+		return nil, err
+	}
+
+	err = cn.DbRebuild(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return cn, nil
+
+}
+
+
 //Tests the scaling of the CN VNIC Creation
 //
 //This tests creates a large number of VNICs across a number
@@ -747,4 +785,62 @@ func TestCN_Whitebox(t *testing.T) {
 	assert.Nil(vnic.Attach(bridge))
 	assert.Nil(vnic.Enable())
 	assert.Nil(bridge.Enable())
+}
+
+//Whitebox test the CN API
+//
+//This tests exercises tests the primitive OVS operations
+//that the CN API rely on. This is used to check any
+//issues with the underlying OVS implementation, netlink library,
+//or kernel. This tests fails typically if the OVS, kernel, or netlink
+//implementation changes
+//
+//Test is expected to pass
+func TestCN_OVSWhitebox(t *testing.T) {
+	assert := assert.New(t)
+	var instanceMAC net.HardwareAddr
+	var err error
+
+	// Typical inputs in YAML from Controller
+	tenantUUID := "tenantUuid"
+	instanceUUID := "tenantUuid"
+	subnetUUID := "subnetUuid"
+	//subnetKey := uint32(0xF)
+	concUUID := "concUuid"
+	//The IP corresponding to CNCI, maybe we can use DNS resolution here?
+	concIP := net.IPv4(192, 168, 1, 1)
+	//The IP corresponding to the VNIC that carries tenant traffic
+	//cnIP := net.IPv4(127, 0, 0, 1)
+	instanceMAC, err = net.ParseMAC("CA:FE:00:01:02:03")
+	assert.Nil(err)
+
+	// Create the CN tenant bridge only if it does not exist
+	bridgeAlias := fmt.Sprintf("br_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
+
+	if assert.NotNil(createOvsBridge(bridgeAlias)) {
+		defer func() { _ = destroyBridgeCli(bridgeAlias) }()
+
+		// Create the tunnel to connect to the CNCI
+		// local := cnIP
+		remote := concIP
+
+		greAlias := fmt.Sprintf("gre_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
+		assert.Nil(addPortInternal(bridgeAlias, greAlias))
+
+		assert.Nil(createGrePort(bridgeAlias, greAlias, remote.String()))
+		defer func() { _ = delGrePort(bridgeAlias, greAlias) }()
+
+	}
+	// Create the VNIC for the instance
+	vnicAlias := fmt.Sprintf("vnic_%s_%s_%s_%s", tenantUUID, instanceUUID, instanceMAC, concUUID)
+	vnic, _ := NewVnic(vnicAlias)
+	vnic.MACAddr = &instanceMAC
+
+	assert.Nil(vnic.Create())
+	defer func() { _ = vnic.Destroy() }()
+
+	// TODO: Add nvic compatibility with ovs
+//	assert.Nil(vnic.Attach(bridge))
+//	assert.Nil(vnic.Enable())
+//	assert.Nil(bridge.Enable())
 }
