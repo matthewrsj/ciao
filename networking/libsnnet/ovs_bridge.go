@@ -18,7 +18,7 @@ func createOvsBridge(bridgeId string) error {
 	return nil
 }
 
-func destroyBridgeCli(bridgeId string) error {
+func destroyOvsBridge(bridgeId string) error {
 	// Example: ovs-vsctl del-br ovs-br1
 	args := []string{"del-br", bridgeId}
 
