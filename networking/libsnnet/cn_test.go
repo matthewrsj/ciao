@@ -818,7 +818,7 @@ func TestCN_OVSWhitebox(t *testing.T) {
 	bridgeAlias := fmt.Sprintf("br_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
 
 	if assert.NotNil(createOvsBridge(bridgeAlias)) {
-		defer func() { _ = destroyBridgeCli(bridgeAlias) }()
+		defer func() { _ = destroyOvsBridge(bridgeAlias) }()
 
 		// Create the tunnel to connect to the CNCI
 		// local := cnIP
