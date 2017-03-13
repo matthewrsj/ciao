@@ -3,6 +3,7 @@ package libsnnet
 import (
 	"os/exec"
 	"errors"
+	"syscall"
 )
 
 func createOvsBridge(bridgeId string) error {
@@ -29,23 +30,22 @@ func destroyBridgeCli(bridgeId string) error {
 }
 
 func vsctlCmd(args []string) error {
-	if _, err := exec.Command("ovs-vsctl", args...).Output(); err != nil {
+	cmd := exec.Command("ovs-vsctl", args...)
+
+	if err := cmd.Start(); err != nil {
 		return err
+	}
+
+	if err := cmd.Wait(); err != nil {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			// The program has exited with an exit code != 0
+			if _, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				return errors.New("ovs-vsctl command exited with non-zero exit code")
+			}
+		} else {
+			return err
+		}
 	}
 
 	return nil
 }
-/*
-func getOvsDevice(bridgeId string) error {
-	args := []string{"br-exists", bridgeId}
-	if err := vsctlCmd(args); err != nil {
-		return err
-	}
-
-	if out,_ := exec.Command("echo", "$?").Output(); string(out) == "0" {
-		return errors.New("bridge already exists")
-	}
-
-	return nil
-}
-*/
