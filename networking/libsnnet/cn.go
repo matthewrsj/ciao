@@ -992,6 +992,9 @@ func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) erro
 		if err := addPortInternal(bridge.GlobalID, gre.GlobalID); err != nil {
 			return fmt.Errorf("Internal port creation failed %s %s", gre.GlobalID, err.Error())
 		}
+		if err := ifconfigInterface(gre.GlobalID, gre.LocalIP.String()); err != nil {
+			return fmt.Errorf("Interface Configuration failed %s %s %s", gre.GlobalID, gre.LocalIP.String(), err.Error())
+		}
 		if err := createGrePort(bridge.GlobalID, gre.GlobalID, gre.RemoteIP.String()); err != nil {
 			return fmt.Errorf("GRE creation failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
 		}
