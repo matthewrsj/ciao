@@ -2,6 +2,7 @@ package libsnnet
 
 import (
 	"fmt"
+	"os/exec"
 )
 
 func addPortInternal(bridgeId string, portId string) error {
@@ -13,6 +14,14 @@ func addPortInternal(bridgeId string, portId string) error {
 		return err
 	}
 
+	return nil
+}
+
+func ifconfigInterface(portID string, localIP string) error {
+	args := []string{portID, localIP}
+	if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -35,4 +44,3 @@ func delGrePort(bridgeId string, portId string) error {
 
 	return nil
 }
-// TODO: need to call ifconfig to add ip address to port

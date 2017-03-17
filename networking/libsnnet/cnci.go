@@ -397,6 +397,9 @@ func createCnciTunnel(bridge *Bridge, gre *GreTunEP, mode NetworkMode) (err erro
 		if err = addPortInternal(bridge.GlobalID, gre.GlobalID); err != nil {
 			return err
 		}
+		if err := ifconfigInterface(gre.GlobalID, gre.LocalIP.String()); err != nil {
+			return err
+		}
 		if err = createGrePort(bridge.GlobalID, gre.GlobalID, gre.RemoteIP.String()); err != nil {
 			return err
 		}
