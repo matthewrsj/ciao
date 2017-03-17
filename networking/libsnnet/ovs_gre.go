@@ -2,7 +2,6 @@ package libsnnet
 
 import (
 	"fmt"
-	"os/exec"
 )
 
 func addPortInternal(bridgeId string, portId string) error {
@@ -36,13 +35,4 @@ func delGrePort(bridgeId string, portId string) error {
 
 	return nil
 }
-
-func vsctlCmd(args []string) error {
-	if _, err := exec.Command("ovs-vsctl", args...).Output(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // TODO: need to call ifconfig to add ip address to port
