@@ -137,6 +137,7 @@ type Attrs struct {
 	// Fully qualifies the device and its role
 	GlobalID string
 	MACAddr  *net.HardwareAddr
+	Mode NetworkMode
 }
 
 // Bridge represents a ciao Bridge

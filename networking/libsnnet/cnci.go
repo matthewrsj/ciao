@@ -229,8 +229,7 @@ func (cnci *Cnci) rebuildBridgeMap(links []netlink.Link) error {
 		if !strings.HasPrefix(bridgeID, bridgePrefix) {
 			continue
 		}
-
-		br, err := NewBridge(bridgeID)
+		br, err := NewBridge(bridgeID, cnci.Mode)
 		if err != nil {
 			return (err)
 		}
@@ -492,7 +491,7 @@ func (cnci *Cnci) AddRemoteSubnet(subnet net.IPNet, subnetKey int, cnIP net.IP) 
 		return "", err
 	}
 
-	bridge, err := NewBridge(genBridgeAlias(subnet))
+	bridge, err := NewBridge(genBridgeAlias(subnet), cnci.Mode)
 	if err != nil {
 		return "", err
 	}
