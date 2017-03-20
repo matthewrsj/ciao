@@ -24,10 +24,11 @@ import (
 
 // NewBridge is used to initialize the bridge properties
 // This has to be called prior to Create() or GetDevice()
-func NewBridge(id string) (*Bridge, error) {
+func NewBridge(id string, mode NetworkMode) (*Bridge, error) {
 	bridge := &Bridge{}
 	bridge.Link = &netlink.Bridge{}
 	bridge.GlobalID = id //TODO: Add other parameters
+	bridge.Mode = mode
 	return bridge, nil
 }
 
