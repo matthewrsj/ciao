@@ -76,29 +76,44 @@ func (b *Bridge) Create() error {
 		}
 	}
 
-	bridge := &netlink.Bridge{LinkAttrs: netlink.LinkAttrs{Name: b.LinkName}}
+	switch b.Mode {
+	case GreTunnel:
+		bridge := &netlink.Bridge{LinkAttrs: netlink.LinkAttrs{Name: b.LinkName}}
 
-	if err := netlink.LinkAdd(bridge); err != nil {
-		return netError(b, "create link add %v %v", b.GlobalID, err)
-	}
+		if err := netlink.LinkAdd(bridge); err != nil {
+			return netError(b, "create link add %v %v", b.GlobalID, err)
+		}
 
-	link, err := netlink.LinkByName(b.LinkName)
-	if err != nil {
-		return netError(b, "create LinkByName %v %v", b.GlobalID, err)
-	}
+		link, err := netlink.LinkByName(b.LinkName)
+		if err != nil {
+			return netError(b, "create LinkByName %v %v", b.GlobalID, err)
+		}
 
-	brl, ok := link.(*netlink.Bridge)
-	if !ok {
-		return netError(b, "create incorrect interface type %v %v", b.GlobalID, link)
-	}
+		brl, ok := link.(*netlink.Bridge)
+		if !ok {
+			return netError(b, "create incorrect interface type %v %v", b.GlobalID, link)
+		}
 
-	b.Link = brl
-	if err := b.setAlias(b.GlobalID); err != nil {
-		err1 := b.Destroy()
-		return netError(b, "create set alias [%v] [%v]", err, err1)
+		b.Link = brl
+		if err := b.setAlias(b.GlobalID); err != nil {
+			err1 := b.Destroy()
+			return netError(b, "create set alias [%v] [%v]", err, err1)
+		}
+
+		return nil
+		break
+	case OvsGreTunnel:
+		if err = createOvsBridge(b.GlobalID); err != nil {
+			return err
+		}
+		return nil
+		break
+	default:
+		return netError(b, "unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
 	}
 
 	return nil
+
 }
 
 // Destroy an existing bridge

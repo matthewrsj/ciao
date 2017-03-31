@@ -743,7 +743,7 @@ func (cn *ComputeNode) createDevicesFromCfg(cfg *VnicConfig) (*Vnic, *Bridge, *G
 
 	alias := genCnVnicAliases(cfg)
 
-	bridge, err := NewBridge(alias.bridge)
+	bridge, err := NewBridge(alias.bridge, cn.Mode)
 	if err != nil {
 		return nil, nil, nil, NewAPIError(err.Error())
 	}
@@ -1203,7 +1203,7 @@ func (cn *ComputeNode) destroyVnicInternal(cfg *VnicConfig) (*SsntpEventInfo, er
 		return nil, nil
 	}
 
-	bridge, err := NewBridge(alias.bridge)
+	bridge, err := NewBridge(alias.bridge, cn.Mode)
 	if err != nil {
 		return nil, NewFatalError(err.Error())
 	}
