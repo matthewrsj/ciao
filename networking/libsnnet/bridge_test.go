@@ -42,12 +42,12 @@ func performBridgeOps(shouldPass bool, assert *assert.Assertions, bridge *Bridge
 func TestBridge_Basic(t *testing.T) {
 	assert := assert.New(t)
 
-	bridge, err := NewBridge("go_testbr")
+	bridge, err := NewBridge("go_testbr", GreTunnel)
 	assert.Nil(err)
 
 	assert.Nil(bridge.Create())
 
-	bridge1, err := NewBridge("go_testbr")
+	bridge1, err := NewBridge("go_testbr", GreTunnel)
 	assert.Nil(err)
 
 	assert.Nil(bridge1.GetDevice())
@@ -65,13 +65,13 @@ func TestBridge_Basic(t *testing.T) {
 //Test is expected to pass
 func TestBridge_Dup(t *testing.T) {
 	assert := assert.New(t)
-	bridge, err := NewBridge("go_testbr")
+	bridge, err := NewBridge("go_testbr", GreTunnel)
 	assert.Nil(err)
 
 	assert.Nil(bridge.Create())
 	defer func() { _ = bridge.Destroy() }()
 
-	bridge1, err := NewBridge("go_testbr")
+	bridge1, err := NewBridge("go_testbr", GreTunnel)
 	assert.Nil(err)
 	assert.NotNil(bridge1.Create())
 }
@@ -85,7 +85,7 @@ func TestBridge_Dup(t *testing.T) {
 func TestBridge_Invalid(t *testing.T) {
 	assert := assert.New(t)
 
-	bridge, err := NewBridge("go_testbr")
+	bridge, err := NewBridge("go_testbr", GreTunnel)
 	assert.Nil(err)
 
 	assert.NotNil(bridge.GetDevice())
@@ -101,12 +101,12 @@ func TestBridge_Invalid(t *testing.T) {
 //Test is expected to pass
 func TestBridge_GetDevice(t *testing.T) {
 	assert := assert.New(t)
-	bridge, err := NewBridge("go_testbr")
+	bridge, err := NewBridge("go_testbr", GreTunnel)
 	assert.Nil(err)
 
 	assert.Nil(bridge.Create())
 
-	bridge1, err := NewBridge("go_testbr")
+	bridge1, err := NewBridge("go_testbr", GreTunnel)
 	assert.Nil(err)
 
 	assert.Nil(bridge1.GetDevice())
