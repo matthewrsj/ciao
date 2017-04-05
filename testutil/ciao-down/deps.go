@@ -23,7 +23,7 @@ var ciaoDevClearDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/xorriso", PackageName: "cloud-control"},
 	{BinaryName: "/usr/bin/ssh", PackageName: "openssh-server"},
 	{BinaryName: "/usr/bin/ssh-keygen", PackageName: "openssh-server"},
-	{BinaryName: "/usr/bin/openvswitch", PackageName: "cloud-control"},
+	{BinaryName: "/usr/bin/openvswitch", PackageName: "network-basic"},
 }
 
 var ciaoDevFedoraDeps = []osprepare.PackageRequirement{

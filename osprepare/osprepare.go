@@ -92,6 +92,7 @@ var BootstrapRequirements = PackageRequirements{
 	},
 	"clearlinux": {
 		{"/usr/bin/ceph", "storage-cluster"},
+		{"/usr/bin/ovs-vsctl", "network-basic"},
 	},
 }
 
