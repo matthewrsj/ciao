@@ -60,8 +60,8 @@ func initNetworkPhase1() error {
 	cn.NetworkConfig = &libsnnet.NetworkConfig{
 		ManagementNet: mnetList,
 		ComputeNet:    cnetList,
-		//Mode:          libsnnet.GreTunnel,
-		Mode:          libsnnet.OvsGreTunnel,
+		Mode:          libsnnet.GreTunnel,
+		//Mode:          libsnnet.OvsGreTunnel,
 	}
 
 	libsnnet.CnMaxAPIConcurrency = 1

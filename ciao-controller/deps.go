@@ -22,11 +22,14 @@ import "github.com/01org/ciao/osprepare"
 var controllerDeps = osprepare.PackageRequirements{
 	"clearlinux": {
 		{BinaryName: "/usr/bin/qemu-img", PackageName: "kvm-host"},
+		{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "network-basic"},
 	},
 	"fedora": {
 		{BinaryName: "/usr/bin/qemu-img", PackageName: "qemu-img"},
+		{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch"},
 	},
 	"ubuntu": {
 		{BinaryName: "/usr/bin/qemu-img", PackageName: "qemu-utils"},
+		{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch-switch"},
 	},
 }
