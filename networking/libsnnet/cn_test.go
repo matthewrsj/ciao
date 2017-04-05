@@ -817,7 +817,7 @@ func TestCN_OVSWhitebox(t *testing.T) {
 	// Create the CN tenant bridge only if it does not exist
 	bridgeAlias := fmt.Sprintf("br_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
 
-	if assert.NotNil(createOvsBridge(bridgeAlias)) {
+	if assert.Nil(createOvsBridge(bridgeAlias)) {
 		defer func() { _ = destroyOvsBridge(bridgeAlias) }()
 
 		// Create the tunnel to connect to the CNCI
@@ -825,7 +825,6 @@ func TestCN_OVSWhitebox(t *testing.T) {
 		remote := concIP
 
 		greAlias := fmt.Sprintf("gre_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
-		assert.Nil(addPortInternal(bridgeAlias, greAlias))
 
 		assert.Nil(createGrePort(bridgeAlias, greAlias, remote.String()))
 		defer func() { _ = delGrePort(bridgeAlias, greAlias) }()
