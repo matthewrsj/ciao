@@ -73,7 +73,7 @@ func TestGre_Bridge(t *testing.T) {
 
 	gre, err := newGreTunEP(id, local, remote, key)
 	assert.Nil(err)
-	bridge, err := NewBridge("testbridge")
+	bridge, err := NewBridge("testbridge", GreTunnel)
 	assert.Nil(err)
 
 	assert.Nil(gre.create())

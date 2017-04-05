@@ -44,7 +44,7 @@ func TestDnsmasq_Basic(t *testing.T) {
 		Mask: net.IPv4Mask(255, 255, 255, 0),
 	}
 
-	bridge, _ := NewBridge("dns_testbr")
+	bridge, _ := NewBridge("dns_testbr", GreTunnel)
 
 	err := bridge.Create()
 	assert.Nil(err)
@@ -99,7 +99,7 @@ func TestDnsmasq_Negative(t *testing.T) {
 		Mask: net.IPv4Mask(255, 255, 255, 0),
 	}
 
-	bridge, _ := NewBridge("dns_testbr")
+	bridge, _ := NewBridge("dns_testbr", GreTunnel)
 
 	err := bridge.Create()
 	assert.Nil(err)

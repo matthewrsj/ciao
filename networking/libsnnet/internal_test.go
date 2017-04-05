@@ -53,7 +53,7 @@ func TestCN_dbRebuild(t *testing.T) {
 	vnicAlias := alias.vnic
 	greAlias := alias.gre
 
-	bridge, _ := NewBridge(bridgeAlias)
+	bridge, _ := NewBridge(bridgeAlias, GreTunnel)
 
 	if assert.NotNil(bridge.GetDevice()) {
 		// First instance to land, create the bridge and tunnel
