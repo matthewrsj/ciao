@@ -109,7 +109,7 @@ func (b *Bridge) Create() error {
 		return nil
 		break
 	default:
-		return netError(b, "unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
+		return netError(b, "Create Bridge: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
 	}
 
 	return nil
@@ -118,70 +118,126 @@ func (b *Bridge) Create() error {
 
 // Destroy an existing bridge
 func (b *Bridge) Destroy() error {
-	if b.Link == nil || b.Link.Index == 0 {
-		return netError(b, "destroy bridge unnitialized")
-	}
+	switch b.Mode {
+	case GreTunnel:
+		if b.Link == nil || b.Link.Index == 0 {
+			return netError(b, "destroy bridge unnitialized")
+		}
 
-	if err := netlink.LinkDel(b.Link); err != nil {
-		return netError(b, "destroy bridge %v", err)
+		if err := netlink.LinkDel(b.Link); err != nil {
+			return netError(b, "destroy bridge %v", err)
+		}
+		return nil
+		break
+	case OvsGreTunnel:
+		if err := destroyOvsBridge(b.GlobalID); err != nil {
+			return netError(b, "destroy bridge %v", err)
+		}
+		return nil
+		break
+	default:
+		return netError(b, "Destroy bridge: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
 	}
 	return nil
+
 }
 
 // Enable the bridge
 func (b *Bridge) Enable() error {
-	if b.Link == nil || b.Link.Index == 0 {
-		return netError(b, "enable bridge unnitialized")
-	}
+	switch b.Mode {
+	case GreTunnel:
+		if b.Link == nil || b.Link.Index == 0 {
+			return netError(b, "enable bridge unnitialized")
+		}
 
-	if err := netlink.LinkSetUp(b.Link); err != nil {
-		return netError(b, "enable link set up", err)
-	}
+		if err := netlink.LinkSetUp(b.Link); err != nil {
+			return netError(b, "enable link set up", err)
+		}
 
+		return nil
+		break
+	case OvsGreTunnel:
+		//TODO: Call function to enable ovs bridge. Is this enabled by default?
+		return nil
+		break
+	default:
+		return netError(b, "Enable bridge: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
+	}
 	return nil
+
 }
 
 // Disable the bridge
 func (b *Bridge) Disable() error {
-	if b.Link == nil || b.Link.Index == 0 {
-		return netError(b, "disable bridge unnitialized")
-	}
+	switch b.Mode {
+	case GreTunnel:
+		if b.Link == nil || b.Link.Index == 0 {
+			return netError(b, "disable bridge unnitialized")
+		}
 
-	if err := netlink.LinkSetDown(b.Link); err != nil {
-		return netError(b, "disable link set down %v", err)
-	}
+		if err := netlink.LinkSetDown(b.Link); err != nil {
+			return netError(b, "disable link set down %v", err)
+		}
 
+		return nil
+	case OvsGreTunnel:
+		//TODO: call function to disable ovs bridge.
+		return nil
+	default:
+		return netError(b, "Disable bridge: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
+	}
 	return nil
+
 }
 
 // AddIP Adds an IP Address to the bridge
 func (b *Bridge) AddIP(ip *net.IPNet) error {
-	if b.Link == nil || b.Link.Index == 0 {
-		return netError(b, "add ip bridge unnitialized")
+	switch b.Mode {
+	case GreTunnel:
+		if b.Link == nil || b.Link.Index == 0 {
+			return netError(b, "add ip bridge unnitialized")
+		}
+
+		addr := &netlink.Addr{IPNet: ip}
+
+		if err := netlink.AddrAdd(b.Link, addr); err != nil {
+			return netError(b, "assigning IP address to bridge %v %v", addr.String(), err)
+		}
+
+		return nil
+		break
+	case OvsGreTunnel:
+		//TODO: assign IP address for Ovs bridge here
+		return nil
+		break
+	default:
+		return netError(b, "Assign IP: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
 	}
-
-	addr := &netlink.Addr{IPNet: ip}
-
-	if err := netlink.AddrAdd(b.Link, addr); err != nil {
-		return netError(b, "assigning IP address to bridge %v %v", addr.String(), err)
-	}
-
 	return nil
+
 }
 
 // DelIP Deletes an IP Address assigned to the bridge
 func (b *Bridge) DelIP(ip *net.IPNet) error {
+	switch b.Mode {
+	case GreTunnel:
+		if b.Link == nil || b.Link.Index == 0 {
+			return netError(b, "del ip bridge unnitialized")
+		}
 
-	if b.Link == nil || b.Link.Index == 0 {
-		return netError(b, "del ip bridge unnitialized")
+		addr := &netlink.Addr{IPNet: ip}
+
+		if err := netlink.AddrDel(b.Link, addr); err != nil {
+			return netError(b, "deleting IP address from bridge %v %v", addr.String(), err)
+		}
+
+		return nil
+	case OvsGreTunnel:
+		//TODO: delete IP address from OVS bridge
+		return nil
+	default:
+		return netError(b, "Delete IP: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
 	}
-
-	addr := &netlink.Addr{IPNet: ip}
-
-	if err := netlink.AddrDel(b.Link, addr); err != nil {
-		return netError(b, "deleting IP address from bridge %v %v", addr.String(), err)
-	}
-
 	return nil
 }
 
