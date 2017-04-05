@@ -139,7 +139,7 @@ func TestCNCI_Internal(t *testing.T) {
 
 	// Create the CNCI aggregation bridge
 	bridgeAlias := fmt.Sprintf("br_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
-	bridge, _ := NewBridge(bridgeAlias)
+	bridge, _ := NewBridge(bridgeAlias, GreTunnel)
 
 	assert.Nil(bridge.Create())
 	defer func() { _ = bridge.Destroy() }()

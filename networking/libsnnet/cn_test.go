@@ -752,7 +752,7 @@ func TestCN_Whitebox(t *testing.T) {
 
 	// Create the CN tenant bridge only if it does not exist
 	bridgeAlias := fmt.Sprintf("br_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
-	bridge, _ := NewBridge(bridgeAlias)
+	bridge, _ := NewBridge(bridgeAlias, GreTunnel)
 
 	if assert.NotNil(bridge.GetDevice()) {
 		// First instance to land, create the bridge and tunnel

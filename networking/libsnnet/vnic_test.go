@@ -238,7 +238,7 @@ func TestVnicContainer_GetDeviceByName(t *testing.T) {
 func TestVnic_Bridge(t *testing.T) {
 	assert := assert.New(t)
 	vnic, _ := NewVnic("testvnic")
-	bridge, _ := NewBridge("testbridge")
+	bridge, _ := NewBridge("testbridge", GreTunnel)
 
 	assert.Nil(vnic.Create())
 	defer func() { _ = vnic.Destroy() }()
@@ -261,7 +261,7 @@ func TestVnic_Bridge(t *testing.T) {
 func TestVnicContainer_Bridge(t *testing.T) {
 	assert := assert.New(t)
 	vnic, _ := NewContainerVnic("testvnic")
-	bridge, _ := NewBridge("testbridge")
+	bridge, _ := NewBridge("testbridge", GreTunnel)
 
 	assert.Nil(vnic.Create())
 

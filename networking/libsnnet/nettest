@@ -1,0 +1,122 @@
+=== RUN   TestBridge_Basic
+--- PASS: TestBridge_Basic (0.04s)
+=== RUN   TestBridge_Dup
+--- PASS: TestBridge_Dup (0.04s)
+=== RUN   TestBridge_Invalid
+--- PASS: TestBridge_Invalid (0.00s)
+=== RUN   TestBridge_GetDevice
+--- PASS: TestBridge_GetDevice (0.04s)
+=== RUN   TestCNContainer_Base
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCNContainer_Base (4.62s)
+=== RUN   TestCNContainer_Connectivity
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCNContainer_Connectivity (5.45s)
+=== RUN   TestCNContainer_Interop1
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCNContainer_Interop1 (5.57s)
+=== RUN   TestCNContainer_Interop2
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCNContainer_Interop2 (5.54s)
+=== RUN   TestCN_Scaling
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCN_Scaling (6.64s)
+=== RUN   TestCN_ResetNetwork
+--- PASS: TestCN_ResetNetwork (0.70s)
+=== RUN   TestCN_MultiTenant
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCN_MultiTenant (0.32s)
+=== RUN   TestCN_Negative
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCN_Negative (0.19s)
+=== RUN   TestCN_AndNN
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCN_AndNN (0.26s)
+=== RUN   TestNN_Base
+--- PASS: TestNN_Base (0.10s)
+=== RUN   TestCN_Base
+Unable to delete firewall rule exit status 2: iptables v1.6.0: Empty interface is likely to be undesired
+Try `iptables -h' or 'iptables --help' for more information.
+--- PASS: TestCN_Base (0.17s)
+=== RUN   TestCN_Whitebox
+--- PASS: TestCN_Whitebox (0.18s)
+=== RUN   TestCNCI_Init
+--- PASS: TestCNCI_Init (0.31s)
+=== RUN   TestCNCI_Internal
+--- PASS: TestCNCI_Internal (0.14s)
+=== RUN   TestCnciVnic_Basic
+--- PASS: TestCnciVnic_Basic (0.04s)
+=== RUN   TestCnciVnic_Dup
+--- PASS: TestCnciVnic_Dup (0.02s)
+=== RUN   TestCnciVnic_Invalid
+--- PASS: TestCnciVnic_Invalid (0.00s)
+=== RUN   TestCnciVnic_GetDevice
+--- PASS: TestCnciVnic_GetDevice (0.04s)
+=== RUN   TestDnsmasq_Basic
+--- PASS: TestDnsmasq_Basic (0.09s)
+=== RUN   TestDnsmasq_Negative
+--- PASS: TestDnsmasq_Negative (0.15s)
+=== RUN   TestFw_Init
+--- PASS: TestFw_Init (0.03s)
+=== RUN   TestFw_Ssh
+--- PASS: TestFw_Ssh (0.04s)
+=== RUN   TestFw_Nat
+--- PASS: TestFw_Nat (0.02s)
+=== RUN   TestFw_PublicIP
+--- PASS: TestFw_PublicIP (0.03s)
+=== RUN   TestFw_All
+--- PASS: TestFw_All (0.03s)
+=== RUN   TestCN_Fuzz
+--- PASS: TestCN_Fuzz (0.03s)
+=== RUN   TestCNCI_Fuzz
+--- PASS: TestCNCI_Fuzz (2.39s)
+=== RUN   TestNwPrimitives_Fuzz
+--- PASS: TestNwPrimitives_Fuzz (7.31s)
+=== RUN   TestGre_Basic
+--- PASS: TestGre_Basic (0.02s)
+=== RUN   TestGre_Bridge
+--- PASS: TestGre_Bridge (0.10s)
+=== RUN   TestGre_Negative
+--- PASS: TestGre_Negative (0.03s)
+=== RUN   TestCN_dbRebuild
+--- PASS: TestCN_dbRebuild (0.20s)
+=== RUN   TestEqualNetSlice
+--- PASS: TestEqualNetSlice (0.00s)
+=== RUN   TestVnic_Basic
+--- PASS: TestVnic_Basic (0.04s)
+=== RUN   TestVnicContainer_Basic
+--- PASS: TestVnicContainer_Basic (0.05s)
+=== RUN   TestVnic_Dup
+--- PASS: TestVnic_Dup (0.02s)
+=== RUN   TestVnicContainer_Dup
+--- PASS: TestVnicContainer_Dup (0.02s)
+=== RUN   TestVnic_Invalid
+--- PASS: TestVnic_Invalid (0.00s)
+=== RUN   TestVnicContainer_Invalid
+--- PASS: TestVnicContainer_Invalid (0.00s)
+=== RUN   TestVnic_GetDevice
+--- PASS: TestVnic_GetDevice (0.01s)
+=== RUN   TestVnicContainer_GetDevice
+--- PASS: TestVnicContainer_GetDevice (0.03s)
+=== RUN   TestVnic_GetDeviceByName
+--- PASS: TestVnic_GetDeviceByName (0.04s)
+=== RUN   TestVnicContainer_GetDeviceByName
+--- PASS: TestVnicContainer_GetDeviceByName (0.04s)
+=== RUN   TestVnic_Bridge
+--- PASS: TestVnic_Bridge (0.10s)
+=== RUN   TestVnicContainer_Bridge
+--- PASS: TestVnicContainer_Bridge (0.09s)
+PASS
+ok  	github.com/01org/ciao/networking/libsnnet	41.360s
