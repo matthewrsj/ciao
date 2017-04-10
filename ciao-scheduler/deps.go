@@ -21,12 +21,12 @@ import "github.com/01org/ciao/osprepare"
 var schedDeps = osprepare.PackageRequirements{
 	// no known dependencies
 	"clearlinux": {
-		{BinaryName: "", PackageName: ""},
+		{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "network-basic"},
 	},
 	"fedora": {
-		{BinaryName: "", PackageName: ""},
+		{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch"},
 	},
 	"ubuntu": {
-		{BinaryName: "", PackageName: ""},
+		{BinaryName: "/usr/bin/ovs-vsctl", PackageName: "openvswitch-switch"},
 	},
 }
