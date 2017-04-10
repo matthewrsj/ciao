@@ -284,13 +284,20 @@ func (v *Vnic) Attach(dev interface{}) error {
 	if !ok {
 		return netError(v, "attach device %v, %T", dev, dev)
 	}
+	switch br.Mode{
+	case GreTunnel:
+		if br.Link == nil || br.Link.Index == 0 {
+			return netError(v, "attach bridge unnitialized")
+		}
 
-	if br.Link == nil || br.Link.Index == 0 {
-		return netError(v, "attach bridge unnitialized")
-	}
-
-	if err := netlink.LinkSetMaster(v.Link, br.Link); err != nil {
-		return netError(v, "attach set master %v", err)
+		if err := netlink.LinkSetMaster(v.Link, br.Link); err != nil {
+			return netError(v, "attach set master %v", err)
+		}
+		break
+	case OvsGreTunnel:
+		break
+	default:
+		return netError(v, "unknown network mode")
 	}
 
 	return nil

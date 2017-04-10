@@ -275,3 +275,50 @@ func TestVnicContainer_Bridge(t *testing.T) {
 	assert.Nil(bridge.Enable())
 	assert.Nil(vnic.Detach(bridge))
 }
+
+
+//Tests VNIC attach to an OVS bridge
+//
+//Tests all interactions between VNIC and Bridge
+//
+//Test is expected to pass
+func TestOvsVnic_Bridge(t *testing.T) {
+	assert := assert.New(t)
+	vnic, _ := NewVnic("testvnic")
+	bridge, _ := NewBridge("testbridge", OvsGreTunnel)
+
+	assert.Nil(vnic.Create())
+	defer func() { _ = vnic.Destroy() }()
+
+	assert.Nil(bridge.Create())
+	defer func() { _ = bridge.Destroy() }()
+
+	assert.Nil(vnic.Attach(bridge))
+	assert.Nil(vnic.Enable())
+	assert.Nil(bridge.Enable())
+	assert.Nil(vnic.Detach(bridge))
+
+}
+
+//Tests Container VNIC attach to an OVS bridge
+//
+//Tests all interactions between VNIC and Bridge
+//
+//Test is expected to pass
+func TestOvsVnicContainer_Bridge(t *testing.T) {
+	assert := assert.New(t)
+	vnic, _ := NewContainerVnic("testvnic")
+	bridge, _ := NewBridge("testbridge", OvsGreTunnel)
+
+	assert.Nil(vnic.Create())
+
+	defer func() { _ = vnic.Destroy() }()
+
+	assert.Nil(bridge.Create())
+	defer func() { _ = bridge.Destroy() }()
+
+	assert.Nil(vnic.Attach(bridge))
+	assert.Nil(vnic.Enable())
+	assert.Nil(bridge.Enable())
+	assert.Nil(vnic.Detach(bridge))
+}

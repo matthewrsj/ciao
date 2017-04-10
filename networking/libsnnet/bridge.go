@@ -20,6 +20,7 @@ import (
 	"net"
 
 	"github.com/vishvananda/netlink"
+	"os/exec"
 )
 
 // NewBridge is used to initialize the bridge properties
@@ -157,7 +158,10 @@ func (b *Bridge) Enable() error {
 		return nil
 		break
 	case OvsGreTunnel:
-		//TODO: Call function to enable ovs bridge. Is this enabled by default?
+		args := []string{b.GlobalID, "up"}
+		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
+			return err
+		}
 		return nil
 		break
 	default:
@@ -181,7 +185,10 @@ func (b *Bridge) Disable() error {
 
 		return nil
 	case OvsGreTunnel:
-		//TODO: call function to disable ovs bridge.
+		args := []string{b.GlobalID, "down"}
+		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
+			return err
+		}
 		return nil
 	default:
 		return netError(b, "Disable bridge: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
@@ -207,7 +214,10 @@ func (b *Bridge) AddIP(ip *net.IPNet) error {
 		return nil
 		break
 	case OvsGreTunnel:
-		//TODO: assign IP address for Ovs bridge here
+		args := []string{b.GlobalID, ip.IP.String()}
+		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
+			return err
+		}
 		return nil
 		break
 	default:
@@ -233,8 +243,12 @@ func (b *Bridge) DelIP(ip *net.IPNet) error {
 
 		return nil
 	case OvsGreTunnel:
-		//TODO: delete IP address from OVS bridge
+		args := []string{b.GlobalID, "del", ip.IP.String()}
+		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
+			return err
+		}
 		return nil
+		break
 	default:
 		return netError(b, "Delete IP: unknown network mode %v, bridge %v", b.Mode, b.GlobalID)
 	}
