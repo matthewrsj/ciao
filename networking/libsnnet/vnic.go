@@ -27,11 +27,12 @@ import (
 
 // NewVnic is used to initialize the Vnic properties
 // This has to be called prior to Create() or GetDevice()
-func NewVnic(id string) (*Vnic, error) {
+func NewVnic(id string, mode  NetworkMode) (*Vnic, error) {
 	Vnic := &Vnic{}
 	Vnic.Link = &netlink.GenericLink{}
 	Vnic.GlobalID = id
 	Vnic.Role = TenantVM
+	Vnic.Mode = mode
 	return Vnic, nil
 }
 

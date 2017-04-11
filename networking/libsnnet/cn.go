@@ -1182,7 +1182,7 @@ func (cn *ComputeNode) destroyVnicInternal(cfg *VnicConfig) (*SsntpEventInfo, er
 	var brDeleteMsg *SsntpEventInfo
 
 	alias := genCnVnicAliases(cfg)
-	vnic, err := NewVnic(alias.vnic)
+	vnic, err := NewVnic(alias.vnic, cn.Mode)
 	if err != nil {
 		return nil, NewAPIError(err.Error())
 	}
