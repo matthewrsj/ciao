@@ -625,7 +625,7 @@ func (cnci *Cnci) Shutdown() error {
 	for alias, linfo := range cnci.topology.linkMap {
 		if linfo != nil {
 			//HACKING: Better to create the right type
-			vnic, err := NewVnic(alias)
+			vnic, err := NewVnic(alias, cnci.Mode)
 			if err != nil {
 				lasterr = err
 				continue

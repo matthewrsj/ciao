@@ -43,7 +43,7 @@ func initNetwork(cancelCh <-chan os.Signal) error {
 	cnci := &libsnnet.Cnci{}
 
 	cnci.NetworkConfig = &libsnnet.NetworkConfig{
-		Mode: libsnnet.GreTunnel,
+		Mode: libsnnet.OvsGreTunnel,
 	}
 
 	if computeNet != "" {
