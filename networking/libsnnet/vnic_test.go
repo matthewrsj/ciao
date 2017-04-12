@@ -41,12 +41,12 @@ func performVnicOps(shouldPass bool, assert *assert.Assertions, vnic *Vnic) {
 //Test is expected to pass
 func TestVnic_Basic(t *testing.T) {
 	assert := assert.New(t)
-
-	vnic, err := NewVnic("testvnic")
+	mode := GreTunnel
+	vnic, err := NewVnic("testvnic", mode)
 	assert.Nil(err)
 	assert.Nil(vnic.Create())
 
-	vnic1, err := NewVnic("testvnic")
+	vnic1, err := NewVnic("testvnic", mode)
 	assert.Nil(err)
 
 	assert.Nil(vnic1.GetDevice())
@@ -83,8 +83,9 @@ func TestVnicContainer_Basic(t *testing.T) {
 //Test is expected to pass
 func TestVnic_Dup(t *testing.T) {
 	assert := assert.New(t)
-	vnic, _ := NewVnic("testvnic")
-	vnic1, _ := NewVnic("testvnic")
+	mode := GreTunnel
+	vnic, _ := NewVnic("testvnic", mode)
+	vnic1, _ := NewVnic("testvnic", mode)
 
 	assert.Nil(vnic.Create())
 	defer func() { _ = vnic.Destroy() }()
@@ -115,7 +116,8 @@ func TestVnicContainer_Dup(t *testing.T) {
 //Test is expected to pass
 func TestVnic_Invalid(t *testing.T) {
 	assert := assert.New(t)
-	vnic, err := NewVnic("testvnic")
+	mode := GreTunnel
+	vnic, err := NewVnic("testvnic", mode)
 	assert.Nil(err)
 
 	assert.NotNil(vnic.GetDevice())
@@ -148,10 +150,11 @@ func TestVnicContainer_Invalid(t *testing.T) {
 //Test is expected to pass
 func TestVnic_GetDevice(t *testing.T) {
 	assert := assert.New(t)
-	vnic1, _ := NewVnic("testvnic")
+	mode := GreTunnel
+	vnic1, _ := NewVnic("testvnic", mode)
 
 	assert.Nil(vnic1.Create())
-	vnic, _ := NewVnic("testvnic")
+	vnic, _ := NewVnic("testvnic", mode)
 
 	assert.Nil(vnic.GetDevice())
 	assert.NotEqual(vnic.InterfaceName(), "")
@@ -192,11 +195,12 @@ func TestVnicContainer_GetDevice(t *testing.T) {
 //Test is expected to pass
 func TestVnic_GetDeviceByName(t *testing.T) {
 	assert := assert.New(t)
-	vnic1, _ := NewVnic("testvnic")
+	mode := GreTunnel
+	vnic1, _ := NewVnic("testvnic", mode)
 	vnic1.LinkName = "testiface"
 
 	assert.Nil(vnic1.Create())
-	vnic, _ := NewVnic("testvnic")
+	vnic, _ := NewVnic("testvnic", mode)
 
 	assert.Nil(vnic.GetDeviceByName("testiface"))
 	assert.NotEqual(vnic.InterfaceName(), "")
@@ -237,8 +241,9 @@ func TestVnicContainer_GetDeviceByName(t *testing.T) {
 //Test is expected to pass
 func TestVnic_Bridge(t *testing.T) {
 	assert := assert.New(t)
-	vnic, _ := NewVnic("testvnic")
-	bridge, _ := NewBridge("testbridge", GreTunnel)
+	mode := GreTunnel
+	vnic, _ := NewVnic("testvnic", mode)
+	bridge, _ := NewBridge("testbridge", mode)
 
 	assert.Nil(vnic.Create())
 	defer func() { _ = vnic.Destroy() }()
@@ -284,7 +289,7 @@ func TestVnicContainer_Bridge(t *testing.T) {
 //Test is expected to pass
 func TestOvsVnic_Bridge(t *testing.T) {
 	assert := assert.New(t)
-	vnic, _ := NewVnic("testvnic")
+	vnic, _ := NewVnic("testvnic", OvsGreTunnel)
 	bridge, _ := NewBridge("testbridge", OvsGreTunnel)
 
 	assert.Nil(vnic.Create())

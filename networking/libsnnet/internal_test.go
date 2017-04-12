@@ -74,7 +74,7 @@ func TestCN_dbRebuild(t *testing.T) {
 	}
 
 	// Create the VNIC for the instance
-	vnic, _ := NewVnic(vnicAlias)
+	vnic, _ := NewVnic(vnicAlias, cn.Mode)
 
 	assert.Nil(vnic.Create())
 	defer func() { _ = vnic.Destroy() }()
@@ -84,7 +84,7 @@ func TestCN_dbRebuild(t *testing.T) {
 	//Add a second vnic
 	vnicCfg.VnicIP = net.IPv4(192, 168, 1, 101)
 	alias1 := genCnVnicAliases(vnicCfg)
-	vnic1, _ := NewVnic(alias1.vnic)
+	vnic1, _ := NewVnic(alias1.vnic, cn.Mode)
 
 	assert.Nil(vnic1.Create())
 	defer func() { _ = vnic1.Destroy() }()
