@@ -28,6 +28,7 @@ var ciaoDevClearDeps = []osprepare.PackageRequirement{
 
 var ciaoDevFedoraDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/qemu-system-x86_64", PackageName: "qemu-system-x86"},
+	{BinaryName: "/usr/bin/qemu-img", PackageName: "qemu-img"},
 	{BinaryName: "/usr/bin/xorriso", PackageName: "xorriso"},
 	{BinaryName: "/usr/bin/ssh", PackageName: "openssh-clients"},
 	{BinaryName: "/usr/bin/ssh-keygen", PackageName: "openssh-clients"},
@@ -36,6 +37,7 @@ var ciaoDevFedoraDeps = []osprepare.PackageRequirement{
 
 var ciaoDevUbuntuDeps = []osprepare.PackageRequirement{
 	{BinaryName: "/usr/bin/qemu-system-x86_64", PackageName: "qemu-system-x86"},
+	{BinaryName: "/usr/bin/qemu-img", PackageName: "qemu-utils"},
 	{BinaryName: "/usr/bin/xorriso", PackageName: "xorriso"},
 	{BinaryName: "/usr/bin/ssh", PackageName: "openssh-client"},
 	{BinaryName: "/usr/bin/ssh-keygen", PackageName: "openssh-client"},

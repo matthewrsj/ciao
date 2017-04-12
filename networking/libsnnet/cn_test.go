@@ -825,7 +825,6 @@ func TestCN_OVSWhitebox(t *testing.T) {
 		remote := concIP
 
 		greAlias := fmt.Sprintf("gre_%s_%s_%s", tenantUUID, subnetUUID, concUUID)
-		assert.Nil(addPortInternal(bridgeAlias, greAlias))
 
 		assert.Nil(createGrePort(bridgeAlias, greAlias, remote.String()))
 		defer func() { _ = delGrePort(bridgeAlias, greAlias) }()

@@ -219,6 +219,8 @@ func (client *ssntpClient) unassignEvent(payload []byte) {
 		return
 	}
 
+	client.ctl.qs.Release(i.TenantID, payloads.RequestedResource{Type: payloads.ExternalIP, Value: 1})
+
 	msg := fmt.Sprintf("Unmapped %s from %s", event.UnassignedIP.PublicIP, event.UnassignedIP.PrivateIP)
 	client.ctl.ds.LogEvent(i.TenantID, msg)
 }
@@ -283,14 +285,14 @@ func (client *ssntpClient) startFailure(payload []byte) {
 		glog.Warningf("Error unmarshalling StartFailure: %v", err)
 		return
 	}
-	if failure.Reason.IsFatal() && !failure.Migration {
+	if failure.Reason.IsFatal() && !failure.Restart {
 		client.deleteEphemeralStorage(failure.InstanceUUID)
 		err = client.releaseResources(failure.InstanceUUID)
 		if err != nil {
 			glog.Warningf("Error when releasing resources for start failed instance: %v", err)
 		}
 	}
-	err = client.ctl.ds.StartFailure(failure.InstanceUUID, failure.Reason, failure.Migration)
+	err = client.ctl.ds.StartFailure(failure.InstanceUUID, failure.Reason, failure.Restart)
 	if err != nil {
 		glog.Warningf("Error adding StartFailure to datastore: %v", err)
 	}
@@ -361,6 +363,8 @@ func (client *ssntpClient) assignError(payload []byte) {
 	if err != nil {
 		glog.Warningf("Error unmapping external IP: %v", err)
 	}
+
+	client.ctl.qs.Release(failure.TenantUUID, payloads.RequestedResource{Type: payloads.ExternalIP, Value: 1})
 
 	msg := fmt.Sprintf("Failed to map %s to %s: %s", failure.PublicIP, failure.InstanceUUID, failure.Reason.String())
 	client.ctl.ds.LogEvent(failure.TenantUUID, msg)
@@ -480,7 +484,7 @@ func (client *ssntpClient) StopInstance(instanceID string, nodeID string) error 
 		Delete: payloads.StopCmd{
 			InstanceUUID:      instanceID,
 			WorkloadAgentUUID: nodeID,
-			Migration:         true,
+			Stop:              true,
 		},
 	}
 
@@ -515,8 +519,8 @@ func (client *ssntpClient) RestartInstance(i *types.Instance, w *types.Workload,
 			Subnet:           i.Subnet,
 			PrivateIP:        i.IPAddress,
 		},
-		Storage:   make([]payloads.StorageResource, len(i.Attachments)),
-		Migration: true,
+		Storage: make([]payloads.StorageResource, len(i.Attachments)),
+		Restart: true,
 	}
 
 	if w.VMType == payloads.Docker {
