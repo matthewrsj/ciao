@@ -2,8 +2,9 @@ package libsnnet
 
 import (
 	"os/exec"
-	"errors"
-	"syscall"
+	"fmt"
+
+	"github.com/golang/glog"
 )
 
 func createOvsBridge(bridgeId string) error {
@@ -50,22 +51,14 @@ func delOvsPort(v *Vnic) error {
 }
 
 func vsctlCmd(args []string) error {
-	cmd := exec.Command("ovs-vsctl", args...)
+	out, err := exec.Command("ovs-vsctl", args...).Output()
+	outs := fmt.Sprintf("%s", out)
 
-	if err := cmd.Start(); err != nil {
+	if err != nil {
+		glog.Warning(outs)
 		return err
 	}
-
-	if err := cmd.Wait(); err != nil {
-		if exiterr, ok := err.(*exec.ExitError); ok {
-			// The program has exited with an exit code != 0
-			if _, ok := exiterr.Sys().(syscall.WaitStatus); ok {
-				return errors.New("ovs-vsctl command exited with non-zero exit code")
-			}
-		} else {
-			return err
-		}
-	}
+	glog.Warning(outs)
 
 	return nil
 }

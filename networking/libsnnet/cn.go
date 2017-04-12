@@ -25,6 +25,7 @@ import (
 
 	"github.com/coreos/go-iptables/iptables"
 	"github.com/vishvananda/netlink"
+	"github.com/golang/glog"
 )
 
 // NetworkConfig from YAML.
@@ -665,15 +666,19 @@ func (cn *ComputeNode) DestroyCnciVnic(cfg *VnicConfig) error {
 //
 // Note: The caller of this function is responsible to send the message to the scheduler
 func (cn *ComputeNode) CreateVnic(cfg *VnicConfig) (*Vnic, *SsntpEventInfo, *ContainerInfo, error) {
+	glog.Warning("Hello, is anybody out there for ovs")
 	if cn.cnTopology == nil || cfg == nil {
+		glog.Warning("checkCnVnicCfg errored out for ovs")
 		return nil, nil, nil, NewAPIError("invalid vnic or configuration")
 	}
 
 	if err := checkCnVnicCfg(cfg); err != nil {
+		glog.Warning("checkCnVnicCfg errored out for ovs")
 		return nil, nil, nil, NewAPIError("invalid vnic or configuration")
 	}
 
 	if err := checkCnVnicCfg(cfg); err != nil {
+		glog.Warning("checkCnVnicCfg errored out for ovs")
 		return nil, nil, nil, NewAPIError(err.Error())
 	}
 
@@ -693,6 +698,7 @@ func (cn *ComputeNode) CreateVnic(cfg *VnicConfig) (*Vnic, *SsntpEventInfo, *Con
 		return nil, nil, nil, NewAPIError("API Cancelled for " + cfg.VnicID)
 	}
 
+	glog.Warning("Going full internal for ovs")
 	return cn.createVnicInternal(cfg)
 }
 
@@ -803,6 +809,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	vnic, bridge, gre, err := cn.createDevicesFromCfg(cfg)
 
 	if err != nil {
+		glog.Warning("createdevicesfromcfg failed for ovs")
 		return nil, nil, nil, err
 	}
 
@@ -821,6 +828,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	}
 
 	if err := cn.logicallyCreateVnic(vnic); err != nil {
+		glog.Warning("logicallyCreateVnic failed for ovs")
 		cn.cnTopology.Unlock()
 		return nil, nil, nil, NewFatalError(err.Error())
 	}
@@ -833,6 +841,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	}
 
 	if err := cn.logicallyCreateBridge(bridge, gre, vnic); err != nil {
+		glog.Warning("logicallyCreatebridge failed for ovs")
 		cn.cnTopology.Unlock()
 		return nil, nil, nil, NewFatalError(err.Error())
 	}
@@ -867,6 +876,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	}
 
 	if err := createAndEnableBridge(bridge, gre, cn.Mode); err != nil {
+		glog.Warning("createandenablebridge failed for ovs")
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 	bLink.index = bridge.Link.Index
@@ -877,10 +887,12 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 		"-p", "all", "-i", bridge.LinkName, "-j", "ACCEPT")
 
 	if err != nil {
+		glog.Warning("appendunique failed for ovs")
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 
 	if err := createAndEnableVnic(vnic, bridge); err != nil {
+		glog.Warning("createandenablevnic failed for ovs")
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 	vLink.index = vnic.Link.Attrs().Index
@@ -891,6 +903,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	// Now the network is ready and you can create a VM and launch it with this vnic
 	// vnic.Name is the interface name, the instance MAC is the MAC Address
 	// qemu-system-x86_64 ... -net nic,model=virtio,macaddr=xxxx -net tap,ifname=vnic.Name ...
+	glog.Warning("we, uh, made it to the end of internal for ovs")
 	return vnic, brCreateMsg, cInfo, nil
 }
 
@@ -987,15 +1000,25 @@ func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) erro
 			return fmt.Errorf("Bridge enable failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
 		}
 	case OvsGreTunnel:
+		glog.Warning("Creating ovs bridge cn")
+		fmt.Println("Creating ovs bridge cn********************************")
 		if err := bridge.Create(); err != nil {
 			return fmt.Errorf("Bridge creation failed %s %s", bridge.GlobalID, err.Error())
 		}
-		if err := ifconfigInterface(gre.GlobalID, gre.LocalIP.String()); err != nil {
-			return fmt.Errorf("Interface Configuration failed %s %s %s", gre.GlobalID, gre.LocalIP.String(), err.Error())
-		}
+		glog.Warning("Creating ovs port internal cn")
+		fmt.Println("Creating ovs port internal cn********************************")
 		if err := addPortInternal(bridge.GlobalID, gre.GlobalID); err != nil {
 			return fmt.Errorf("Internal port creation failed %s %s", gre.GlobalID, err.Error())
 		}
+		//glog.Warning("ifconfig ovs bridge cn")
+		//fmt.Println("ifconfig ovs bridge cn********************************")
+		//if err := ifconfigInterface(gre.GlobalID, gre.LocalIP.String()); err != nil {
+		//	s := fmt.Sprintf("Interface config failed %s %s %s", gre.GlobalID, gre.LocalIP.String(), err.Error())
+		//	glog.Warning(s)
+		//	return fmt.Errorf("Interface Configuration failed %s %s %s", gre.GlobalID, gre.LocalIP.String(), err.Error())
+		//}
+		glog.Warning("Creating ovs gre port cn")
+		fmt.Println("Creating ovs gre port cn********************************")
 		if err := createGrePort(bridge.GlobalID, gre.GlobalID, gre.RemoteIP.String()); err != nil {
 			return fmt.Errorf("GRE creation failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
 		}
@@ -1030,6 +1053,8 @@ func createAndEnableVnic(vnic *Vnic, bridge *Bridge) error {
 		}
 		break
 	case OvsGreTunnel:
+		glog.Warning("not doing anything with the vnic")
+		fmt.Println("not doing anything with the vnic***************************")
 		break
 	default:
 		return fmt.Errorf("unknown network mode %s", bridge.Mode)

@@ -3,6 +3,8 @@ package libsnnet
 import (
 	"fmt"
 	"os/exec"
+
+	"github.com/golang/glog"
 )
 
 func addPortInternal(bridgeId string, portId string) error {
@@ -19,9 +21,13 @@ func addPortInternal(bridgeId string, portId string) error {
 
 func ifconfigInterface(portID string, localIP string) error {
 	args := []string{portID, localIP}
-	if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
+	glog.Warning(localIP)
+	out, err := exec.Command("ifconfig", args...).Output()
+	if err != nil {
+		glog.Warning(out)
 		return err
 	}
+
 	return nil
 }
 

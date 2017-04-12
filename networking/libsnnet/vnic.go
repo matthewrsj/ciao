@@ -23,6 +23,7 @@ import (
 	"syscall"
 
 	"github.com/vishvananda/netlink"
+	"github.com/golang/glog"
 )
 
 // NewVnic is used to initialize the Vnic properties
@@ -299,6 +300,7 @@ func (v *Vnic) Attach(dev interface{}) error {
 		if err := addOvsPort(v); err != nil {
 			return netError(v, "attach vnic to OVS bridge %v", err)
 		}
+		glog.Warning("Not attaching vnic because ovs...")
 		break
 	default:
 		return netError(v, "unknown network mode")

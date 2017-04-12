@@ -18,9 +18,11 @@ package libsnnet
 
 import (
 	"net"
+	"fmt"
 
 	"github.com/vishvananda/netlink"
 	"os/exec"
+	"github.com/golang/glog"
 )
 
 // NewBridge is used to initialize the bridge properties
@@ -104,6 +106,8 @@ func (b *Bridge) Create() error {
 		return nil
 		break
 	case OvsGreTunnel:
+		glog.Warning("creating ovs bridge bridge.go")
+		fmt.Println("Creating ovs bridge bridge.go ***********************")
 		if err = createOvsBridge(b.GlobalID); err != nil {
 			return err
 		}
@@ -131,6 +135,8 @@ func (b *Bridge) Destroy() error {
 		return nil
 		break
 	case OvsGreTunnel:
+		glog.Warning("destroying ovs bridge bridge.go")
+		fmt.Println("destroying ovs bridge bridge.go***********************")
 		if err := destroyOvsBridge(b.GlobalID); err != nil {
 			return netError(b, "destroy bridge %v", err)
 		}
@@ -158,6 +164,8 @@ func (b *Bridge) Enable() error {
 		return nil
 		break
 	case OvsGreTunnel:
+		glog.Warning("ifconfig up bridge.go why not use the function???")
+		fmt.Println("ifconfig up bridge.go why not use the function???******************")
 		args := []string{b.GlobalID, "up"}
 		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
 			return err
@@ -185,6 +193,8 @@ func (b *Bridge) Disable() error {
 
 		return nil
 	case OvsGreTunnel:
+		glog.Warning("ifconfig2 up bridge.go why not use the function???")
+		fmt.Println("ifconfig2 up bridge.go why not use the function???******************")
 		args := []string{b.GlobalID, "down"}
 		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
 			return err
@@ -214,6 +224,8 @@ func (b *Bridge) AddIP(ip *net.IPNet) error {
 		return nil
 		break
 	case OvsGreTunnel:
+		glog.Warning("ifconfig3 ip bridge.go")
+		fmt.Println("ifconfig3 ip bridge.go *****************")
 		args := []string{b.GlobalID, ip.IP.String()}
 		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
 			return err
@@ -243,6 +255,8 @@ func (b *Bridge) DelIP(ip *net.IPNet) error {
 
 		return nil
 	case OvsGreTunnel:
+		glog.Warning("ifconfig4 del bridge.go")
+		fmt.Println("ifconfig4 del bridge.go ***********************")
 		args := []string{b.GlobalID, "del", ip.IP.String()}
 		if _, err := exec.Command("ifconfig", args...).Output(); err != nil {
 			return err
