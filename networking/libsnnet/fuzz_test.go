@@ -175,7 +175,7 @@ func TestNwPrimitives_Fuzz(t *testing.T) {
 	}
 
 	for i := 0; i < 100; i++ {
-		vnic, _ := NewVnic("xyz")
+		vnic, _ := NewVnic("xyz", GreTunnel)
 		f.Fuzz(&vnic.Role)
 		f.Fuzz(&vnic.GlobalID)
 		f.Fuzz(&vnic.TenantID)

@@ -776,7 +776,7 @@ func TestCN_Whitebox(t *testing.T) {
 
 	// Create the VNIC for the instance
 	vnicAlias := fmt.Sprintf("vnic_%s_%s_%s_%s", tenantUUID, instanceUUID, instanceMAC, concUUID)
-	vnic, _ := NewVnic(vnicAlias)
+	vnic, _ := NewVnic(vnicAlias, GreTunnel)
 	vnic.MACAddr = &instanceMAC
 
 	assert.Nil(vnic.Create())
@@ -833,7 +833,7 @@ func TestCN_OVSWhitebox(t *testing.T) {
 	}
 	// Create the VNIC for the instance
 	vnicAlias := fmt.Sprintf("vnic_%s_%s_%s_%s", tenantUUID, instanceUUID, instanceMAC, concUUID)
-	vnic, _ := NewVnic(vnicAlias)
+	vnic, _ := NewVnic(vnicAlias, GreTunnel)
 	vnic.MACAddr = &instanceMAC
 
 	assert.Nil(vnic.Create())
