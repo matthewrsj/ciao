@@ -296,6 +296,9 @@ func (v *Vnic) Attach(dev interface{}) error {
 		}
 		break
 	case OvsGreTunnel:
+		if err := addOvsPort(v); err != nil {
+			return netError(v, "attach vnic to OVS bridge %v", err)
+		}
 		break
 	default:
 		return netError(v, "unknown network mode")
@@ -316,13 +319,24 @@ func (v *Vnic) Detach(dev interface{}) error {
 	if !ok {
 		return netError(v, "detach unknown device %v, %T", dev, dev)
 	}
+	switch br.Mode {
+	case GreTunnel:
+		if br.Link == nil {
+			return netError(v, "detach bridge unnitialized")
+		}
 
-	if br.Link == nil {
-		return netError(v, "detach bridge unnitialized")
-	}
+		if err := netlink.LinkSetNoMaster(v.Link); err != nil {
+			return netError(v, "detach set no master %v", err)
+		}
+		break
+	case OvsGreTunnel:
+		if err := delOvsPort(v); err != nil {
+			return netError(v, "remove port from OVS bridge")
+		}
+		break
+	default:
+		return netError(v, "unknown network mode")
 
-	if err := netlink.LinkSetNoMaster(v.Link); err != nil {
-		return netError(v, "detach set no master %v", err)
 	}
 
 	return nil

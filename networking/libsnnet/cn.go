@@ -66,6 +66,7 @@ type VnicConfig struct {
 	TenantID   string // UUID
 	SubnetID   string // UUID
 	ConcID     string // UUID
+	Mode       NetworkMode
 }
 
 // CNSsntpEvent to be generated in response to a VNIC creation
@@ -702,7 +703,7 @@ func newCNVnic(cfg *VnicConfig, id string) (*Vnic, error) {
 
 	switch cfg.VnicRole {
 	case TenantVM:
-		vnic, err = NewVnic(id)
+		vnic, err = NewVnic(id, OvsGreTunnel)
 	case TenantContainer:
 		vnic, err = NewContainerVnic(id)
 	}
