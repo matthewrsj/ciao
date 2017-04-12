@@ -107,7 +107,6 @@ func (b *Bridge) Create() error {
 		break
 	case OvsGreTunnel:
 		glog.Warning("creating ovs bridge bridge.go")
-		fmt.Println("Creating ovs bridge bridge.go ***********************")
 		if err = createOvsBridge(b.GlobalID); err != nil {
 			return err
 		}

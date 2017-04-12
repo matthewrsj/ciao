@@ -398,7 +398,7 @@ func createCnciTunnel(bridge *Bridge, gre *GreTunEP, mode NetworkMode) (err erro
 	case OvsGreTunnel:
 		glog.Warning("Adding internal OVS port")
 		fmt.Println("Adding internal OVS port********************************")
-		if err = addPortInternal(bridge.GlobalID, gre.GlobalID); err != nil {
+		if err = addPortInternal(bridge.GlobalID, gre); err != nil {
 			return err
 		}
 		//glog.Warning("ifconfigging ovs interface")

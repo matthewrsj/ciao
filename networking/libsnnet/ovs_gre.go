@@ -7,10 +7,16 @@ import (
 	"github.com/golang/glog"
 )
 
-func addPortInternal(bridgeId string, portId string) error {
+func addPortInternal(bridgeId string, g *GreTunEP) error {
 	// Example: ovs-vsctl add-port ovs-br1 endpoint1
 	// Usage: ovs-vsctl add-port <bridge> <port-name>
-	args := []string{"add-port", bridgeId, portId, "--", "set", "interface", portId, "type=internal"}
+	var err error
+	if g.LinkName == "" {
+		if g.LinkName, err = genIface(g, false); err != nil {
+			return netError(g, "create geniface %v, %v", g.GlobalID, err)
+		}
+	}
+	args := []string{"add-port", bridgeId, g.LinkName, "--", "set", "interface", g.LinkName, "type=internal"}
 
 	if err := vsctlCmd(args); err != nil {
 		return err
@@ -33,6 +39,7 @@ func ifconfigInterface(portID string, localIP string) error {
 
 func createGrePort(bridgeId string, portId string, remoteIp string) error {
 	args := []string{"add-port", bridgeId, portId, "--", "set", "interface", portId, "type=gre", fmt.Sprintf("options:remote_ip=%s", remoteIp)}
+	glog.Warning(args)
 
 	if err := vsctlCmd(args); err != nil {
 		return err

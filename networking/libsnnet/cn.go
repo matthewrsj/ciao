@@ -876,7 +876,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	}
 
 	if err := createAndEnableBridge(bridge, gre, cn.Mode); err != nil {
-		glog.Warning("createandenablebridge failed for ovs")
+		glog.Warning("createandenablebridge failed for ovs " + err.Error())
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 	bLink.index = bridge.Link.Index
@@ -999,17 +999,16 @@ func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) erro
 		if err := bridge.Enable(); err != nil {
 			return fmt.Errorf("Bridge enable failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
 		}
+		break
 	case OvsGreTunnel:
 		glog.Warning("Creating ovs bridge cn")
-		fmt.Println("Creating ovs bridge cn********************************")
 		if err := bridge.Create(); err != nil {
 			return fmt.Errorf("Bridge creation failed %s %s", bridge.GlobalID, err.Error())
 		}
-		glog.Warning("Creating ovs port internal cn")
-		fmt.Println("Creating ovs port internal cn********************************")
-		if err := addPortInternal(bridge.GlobalID, gre.GlobalID); err != nil {
-			return fmt.Errorf("Internal port creation failed %s %s", gre.GlobalID, err.Error())
-		}
+		//glog.Warning("Creating ovs port internal cn")
+		//if err := addPortInternal(bridge.GlobalID); err != nil {
+		//	return fmt.Errorf("Internal port creation failed %s %s", gre.GlobalID, err.Error())
+		//}
 		//glog.Warning("ifconfig ovs bridge cn")
 		//fmt.Println("ifconfig ovs bridge cn********************************")
 		//if err := ifconfigInterface(gre.GlobalID, gre.LocalIP.String()); err != nil {
@@ -1018,10 +1017,13 @@ func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) erro
 		//	return fmt.Errorf("Interface Configuration failed %s %s %s", gre.GlobalID, gre.LocalIP.String(), err.Error())
 		//}
 		glog.Warning("Creating ovs gre port cn")
-		fmt.Println("Creating ovs gre port cn********************************")
 		if err := createGrePort(bridge.GlobalID, gre.GlobalID, gre.RemoteIP.String()); err != nil {
+			glog.Warning("create ovs gre port cn failed")
 			return fmt.Errorf("GRE creation failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
 		}
+		break
+	default:
+		return fmt.Errorf("Unsupported network mode")
 	}
 	return nil
 }
