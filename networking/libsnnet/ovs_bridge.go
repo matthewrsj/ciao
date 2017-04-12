@@ -29,6 +29,26 @@ func destroyOvsBridge(bridgeId string) error {
 	return nil
 }
 
+func addOvsPort(v *Vnic) error {
+	args := []string{"add-port", v.BridgeID, v.Attrs.LinkName}
+
+	if err := vsctlCmd(args); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func delOvsPort(v *Vnic) error {
+	args := []string{"del-port", v.BridgeID, v.Attrs.LinkName}
+
+	if err := vsctlCmd(args); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func vsctlCmd(args []string) error {
 	cmd := exec.Command("ovs-vsctl", args...)
 
