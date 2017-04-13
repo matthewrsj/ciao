@@ -6,10 +6,9 @@ import (
 
 	"github.com/golang/glog"
 )
-
 func createOvsBridge(bridgeId string) error {
 	// Example: ovs-vsctl add-br ovs-br1
-	args := []string{"add-br", bridgeId}
+	args := []string{"add-br", bridgeId, "--", "set", "bridge", bridgeId, "datapath_type=netdev"}
 
 	// Execute command
 	if err := vsctlCmd(args); err != nil {
@@ -55,7 +54,7 @@ func vsctlCmd(args []string) error {
 	outs := fmt.Sprintf("%s", out)
 
 	if err != nil {
-		glog.Warning(outs)
+		glog.Warning(outs + " " + err.Error())
 		return err
 	}
 	glog.Warning(outs)
