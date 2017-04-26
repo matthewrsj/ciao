@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/vishvananda/netlink"
+	"github.com/golang/glog"
 )
 
 // Cnci represents a Concentrator for a single tenant
@@ -375,6 +376,8 @@ func createCnciBridge(bridge *Bridge, brInfo *bridgeInfo, tenant string, subnet 
 			return err
 		}
 	case OvsGreTunnel:
+		glog.Warning("creating ovs bridge cnci")
+		fmt.Println("creating ovs bridge cnci****************************")
 		if err = createOvsBridge(bridge.GlobalID); err != nil {
 			return err
 		}
@@ -393,12 +396,18 @@ func createCnciTunnel(bridge *Bridge, gre *GreTunEP, mode NetworkMode) (err erro
 			return err
 		}
 	case OvsGreTunnel:
-		if err = addPortInternal(bridge.GlobalID, gre.GlobalID); err != nil {
+		glog.Warning("Adding internal OVS port")
+		fmt.Println("Adding internal OVS port********************************")
+		if err = addPortInternal(bridge.GlobalID, gre); err != nil {
 			return err
 		}
-		if err := ifconfigInterface(gre.GlobalID, gre.LocalIP.String()); err != nil {
-			return err
-		}
+		//glog.Warning("ifconfigging ovs interface")
+		//fmt.Println("ifconfigging ovs interface*******************************")
+		//if err := ifconfigInterface(gre.GlobalID, gre.LocalIP.String()); err != nil {
+		//	return err
+		//}
+		glog.Warning("Creating GRE port")
+		fmt.Println("creating ovs GRE PORT")
 		if err = createGrePort(bridge.GlobalID, gre.GlobalID, gre.RemoteIP.String()); err != nil {
 			return err
 		}

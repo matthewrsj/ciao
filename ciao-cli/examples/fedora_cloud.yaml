@@ -1,4 +1,4 @@
-description: "Fedora VM no storage"
+description: "Fedora VM openvswitch" 
 vm_type: qemu
 fw_type: legacy
 defaults:

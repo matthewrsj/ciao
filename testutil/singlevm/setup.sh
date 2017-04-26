@@ -127,6 +127,8 @@ function createWorkloads() {
 	cat <<-EOF
 	---
 	#cloud-config
+	runcmd:
+	  - sudo yum install -y openvswitch
 	users:
 	  - name: demouser
 	    gecos: CIAO Demo User

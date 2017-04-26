@@ -23,6 +23,7 @@ import (
 	"syscall"
 
 	"github.com/vishvananda/netlink"
+	"github.com/golang/glog"
 )
 
 // NewVnic is used to initialize the Vnic properties
@@ -296,7 +297,9 @@ func (v *Vnic) Attach(dev interface{}) error {
 		}
 		break
 	case OvsGreTunnel:
+		glog.Warning("adding ovs port vnic")
 		if err := addOvsPort(v); err != nil {
+			glog.Warning("returning error from vnic addport")
 			return netError(v, "attach vnic to OVS bridge %v", err)
 		}
 		break
@@ -319,12 +322,13 @@ func (v *Vnic) Detach(dev interface{}) error {
 	if !ok {
 		return netError(v, "detach unknown device %v, %T", dev, dev)
 	}
+
+	if br.Link == nil {
+		return netError(v, "detach bridge unnitialized")
+	}
+
 	switch br.Mode {
 	case GreTunnel:
-		if br.Link == nil {
-			return netError(v, "detach bridge unnitialized")
-		}
-
 		if err := netlink.LinkSetNoMaster(v.Link); err != nil {
 			return netError(v, "detach set no master %v", err)
 		}
