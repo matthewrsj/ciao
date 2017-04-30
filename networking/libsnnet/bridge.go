@@ -18,7 +18,6 @@ package libsnnet
 
 import (
 	"net"
-	"fmt"
 
 	"github.com/vishvananda/netlink"
 	"os/exec"

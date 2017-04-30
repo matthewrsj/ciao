@@ -2,7 +2,6 @@ package libsnnet
 
 import (
 	"os/exec"
-	"fmt"
 
 	"github.com/golang/glog"
 )
