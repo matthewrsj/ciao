@@ -297,9 +297,8 @@ func (v *Vnic) Attach(dev interface{}) error {
 		}
 		break
 	case OvsGreTunnel:
-		glog.Warning("adding ovs port vnic")
 		if err := addOvsPort(v); err != nil {
-			glog.Warning("returning error from vnic addport")
+			glog.Warning("addOvsPort failed: " + err.Error())
 			return netError(v, "attach vnic to OVS bridge %v", err)
 		}
 		break

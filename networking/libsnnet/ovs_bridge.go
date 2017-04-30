@@ -50,14 +50,12 @@ func delOvsPort(v *Vnic) error {
 }
 
 func vsctlCmd(args []string) error {
-	out, err := exec.Command("ovs-vsctl", args...).Output()
-	outs := fmt.Sprintf("%s", out)
+	_, err := exec.Command("ovs-vsctl", args...).Output()
 
 	if err != nil {
-		glog.Warning(outs + " " + err.Error())
+		glog.Error("vsctlCmd failed: " + err.Error())
 		return err
 	}
-	glog.Warning(outs)
 
 	return nil
 }

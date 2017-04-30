@@ -673,7 +673,6 @@ func (cn *ComputeNode) DestroyCnciVnic(cfg *VnicConfig) error {
 //
 // Note: The caller of this function is responsible to send the message to the scheduler
 func (cn *ComputeNode) CreateVnic(cfg *VnicConfig) (*Vnic, *SsntpEventInfo, *ContainerInfo, error) {
-	glog.Warning("Hello, is anybody out there for ovs")
 	if cn.cnTopology == nil || cfg == nil {
 		glog.Warning("checkCnVnicCfg errored out for ovs")
 		return nil, nil, nil, NewAPIError("invalid vnic or configuration")
@@ -705,7 +704,6 @@ func (cn *ComputeNode) CreateVnic(cfg *VnicConfig) (*Vnic, *SsntpEventInfo, *Con
 		return nil, nil, nil, NewAPIError("API Cancelled for " + cfg.VnicID)
 	}
 
-	glog.Warning("Going full internal for ovs")
 	return cn.createVnicInternal(cfg)
 }
 
@@ -816,7 +814,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	vnic, bridge, gre, err := cn.createDevicesFromCfg(cfg)
 
 	if err != nil {
-		glog.Warning("createdevicesfromcfg failed for ovs")
+		glog.Warning("createDevicesFromCfg failed for ovs")
 		return nil, nil, nil, err
 	}
 
@@ -883,7 +881,7 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	}
 
 	if err := createAndEnableBridge(bridge, gre, cn.Mode); err != nil {
-		glog.Warning("createandenablebridge failed for ovs " + err.Error())
+		glog.Warning("createAndEnableBridge failed for ovs " + err.Error())
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 	bLink.index = bridge.Link.Index
@@ -894,12 +892,12 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 		"-p", "all", "-i", bridge.LinkName, "-j", "ACCEPT")
 
 	if err != nil {
-		glog.Warning("appendunique failed for ovs")
+		glog.Warning("cn.AppendUnique failed for ovs")
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 
 	if err := createAndEnableVnic(vnic, bridge); err != nil {
-		glog.Warning("createandenablevnic failed for ovs")
+		glog.Warning("createAndEnableVnic failed for ovs")
 		return nil, brCreateMsg, nil, NewFatalError(err.Error())
 	}
 	vLink.index = vnic.Link.Attrs().Index
@@ -910,7 +908,6 @@ func (cn *ComputeNode) createVnicInternal(cfg *VnicConfig) (*Vnic, *SsntpEventIn
 	// Now the network is ready and you can create a VM and launch it with this vnic
 	// vnic.Name is the interface name, the instance MAC is the MAC Address
 	// qemu-system-x86_64 ... -net nic,model=virtio,macaddr=xxxx -net tap,ifname=vnic.Name ...
-	glog.Warning("we, uh, made it to the end of internal for ovs")
 	return vnic, brCreateMsg, cInfo, nil
 }
 
@@ -1008,7 +1005,7 @@ func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) erro
 		}
 		break
 	case OvsGreTunnel:
-		glog.Warning("Creating ovs bridge cn")
+		glog.Info("Creating ovs bridge cn")
 		if err := bridge.Create(); err != nil {
 			return fmt.Errorf("Bridge creation failed %s %s", bridge.GlobalID, err.Error())
 		}
@@ -1025,7 +1022,7 @@ func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) erro
 		//}
 		glog.Warning("Creating ovs gre port cn")
 		if err := createGrePort(bridge.GlobalID, gre.GlobalID, gre.RemoteIP.String()); err != nil {
-			glog.Warning("create ovs gre port cn failed")
+			glog.Warning("ovs createGrePort failed")
 			return fmt.Errorf("GRE creation failed %s %s %s", gre.GlobalID, bridge.GlobalID, err.Error())
 		}
 		break
@@ -1037,36 +1034,27 @@ func createAndEnableBridge(bridge *Bridge, gre *GreTunEP, mode NetworkMode) erro
 
 //Physically create the VNIC and attach it to the bridge
 func createAndEnableVnic(vnic *Vnic, bridge *Bridge) error {
-	//switch bridge.Mode {
-	//case GreTunnel:
-		if err := vnic.Create(); err != nil {
-			return fmt.Errorf("VNIC creation failed %s %s", vnic.GlobalID, err.Error())
-		}
+	if err := vnic.Create(); err != nil {
+		return fmt.Errorf("VNIC creation failed %s %s", vnic.GlobalID, err.Error())
+	}
 
-		vnicPeer, err := initializeVnicPeer(vnic)
-		if err != nil {
-			return fmt.Errorf("VNIC Initialize Peer %s %s", vnic.GlobalID, err.Error())
-		}
-		if err := vnicPeer.SetHardwareAddr(*vnic.MACAddr); err != nil {
-			return fmt.Errorf("VNIC Set MAC Address %s %s", vnic.GlobalID, err.Error())
-		}
-		if err := vnic.SetMTU(vnic.MTU); err != nil {
-			return fmt.Errorf("VNIC Set MTU Address %s %s", vnic.GlobalID, err.Error())
-		}
-		if err := vnic.Attach(bridge); err != nil {
-			return fmt.Errorf("VNIC attach failed %s %s %s", vnic.GlobalID, bridge.GlobalID, err.Error())
-		}
-		vnic.BridgeID = bridge.LinkName
-		if err := vnic.Enable(); err != nil {
-			return fmt.Errorf("VNIC enable failed %s %s %s", vnic.GlobalID, bridge.GlobalID, err.Error())
-		}
-	//	break
-	//case OvsGreTunnel:
-	//	glog.Warning("not doing anything with the vnic")
-	//	break
-	//default:
-	//	return fmt.Errorf("unknown network mode %s", bridge.Mode)
-	//}
+	vnicPeer, err := initializeVnicPeer(vnic)
+	if err != nil {
+		return fmt.Errorf("VNIC Initialize Peer %s %s", vnic.GlobalID, err.Error())
+	}
+	if err := vnicPeer.SetHardwareAddr(*vnic.MACAddr); err != nil {
+		return fmt.Errorf("VNIC Set MAC Address %s %s", vnic.GlobalID, err.Error())
+	}
+	if err := vnic.SetMTU(vnic.MTU); err != nil {
+		return fmt.Errorf("VNIC Set MTU Address %s %s", vnic.GlobalID, err.Error())
+	}
+	if err := vnic.Attach(bridge); err != nil {
+		return fmt.Errorf("VNIC attach failed %s %s %s", vnic.GlobalID, bridge.GlobalID, err.Error())
+	}
+	vnic.BridgeID = bridge.LinkName
+	if err := vnic.Enable(); err != nil {
+		return fmt.Errorf("VNIC enable failed %s %s %s", vnic.GlobalID, bridge.GlobalID, err.Error())
+	}
 
 	return nil
 }
